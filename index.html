@@ -5,12 +5,18 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <title>BK Suivi Équipe</title>
-<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@400;500;600&display=swap');
+:root{--red:#D62300;--orange:#FF8732;--yellow:#F5A623;--dark:#1A1A1A;--gray:#2C2C2C;--r:8px;}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
-:root{--red:#D62300;--orange:#FF8732;--yellow:#F5A623;--dark:#1A1A1A;--gray:#2C2C2C;--r:8px;--green:#2A7D4F;}
 body{font-family:Barlow,sans-serif;background:var(--dark);color:#F5F0E8;min-height:100vh;}
-#loading-screen{min-height:100vh;background:radial-gradient(ellipse at top,#2C1810,#1A1A1A 65%);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;}
+header{background:linear-gradient(135deg,var(--red),#A01800);padding:0 16px;display:flex;align-items:center;justify-content:space-between;height:58px;box-shadow:0 4px 20px rgba(0,0,0,.5);position:sticky;top:0;z-index:100;}
+header h1{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.5rem;letter-spacing:1px;color:var(--yellow);text-transform:uppercase;}
+header h1 span{color:#fff;}
+#user-info{display:flex;align-items:center;gap:8px;font-size:.82rem;}
+#role-badge{background:var(--yellow);color:var(--dark);font-weight:700;padding:3px 10px;border-radius:20px;font-size:.72rem;text-transform:uppercase;letter-spacing:1px;}
+#btn-logout{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:#fff;padding:4px 12px;border-radius:20px;cursor:pointer;font-size:.78rem;font-family:Barlow,sans-serif;}
+#loading-screen{min-height:100vh;background:radial-gradient(ellipse at top,#2C1810,#1A1A1A 65%);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;}
 .load-logo{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:3rem;color:var(--yellow);letter-spacing:4px;}
 .load-dots{display:flex;gap:8px;}
 .load-dot{width:8px;height:8px;border-radius:50%;background:var(--orange);animation:bounce 1.2s infinite ease-in-out;}
@@ -18,90 +24,116 @@ body{font-family:Barlow,sans-serif;background:var(--dark);color:#F5F0E8;min-heig
 @keyframes bounce{0%,80%,100%{transform:scale(0);opacity:.4}40%{transform:scale(1);opacity:1}}
 #login-screen{display:none;min-height:100vh;background:radial-gradient(ellipse at top,#2C1810,#1A1A1A 65%);}
 .login-step{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:24px;}
-.tile{border-radius:14px;border:2px solid transparent;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;cursor:pointer;transition:transform .18s;user-select:none;}
+.tile{border-radius:14px;border:2px solid transparent;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;cursor:pointer;transition:transform .18s,box-shadow .18s;user-select:none;}
+.tile:hover{transform:translateY(-4px) scale(1.04);}
 .tile:active{transform:scale(.96);}
-.tile-admin{width:150px;height:150px;background:linear-gradient(145deg,#3A2A00,#1E1600);border-color:var(--yellow);}
-.tile-rh{width:150px;height:150px;background:linear-gradient(145deg,#1E2A1E,#111811);border-color:#4A8A4A;}
-.tile-bk{width:155px;height:155px;border-color:var(--orange);background:linear-gradient(145deg,#2A1800,#180F00);}
-.tile-mgr{width:130px;height:130px;background:linear-gradient(145deg,#1E2A3A,#111820);border-color:#4A7FAA;}
-.tile-icon{font-size:2.2rem;line-height:1;}
-.tile-label{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.9rem;text-transform:uppercase;letter-spacing:2px;color:#fff;}
-.tile-sub{font-size:.68rem;color:#aaa;text-align:center;}
-.pin-box{background:#2C2C2C;border:2px solid #444;border-radius:14px;padding:28px;width:290px;max-width:94vw;box-shadow:0 0 60px rgba(0,0,0,.6);text-align:center;}
-.pin-dots{display:flex;justify-content:center;gap:12px;margin-bottom:20px;}
-.pin-dot{width:13px;height:13px;border-radius:50%;border:2px solid #555;background:transparent;transition:background .15s;}
+.tile-admin{width:155px;height:155px;background:linear-gradient(145deg,#3A2A00,#1E1600);border-color:var(--yellow);}
+.tile-rh{width:155px;height:155px;background:linear-gradient(145deg,#1E2A1E,#111811);border-color:#4A8A4A;}
+.tile-dir{width:160px;height:160px;background:linear-gradient(145deg,#2A1500,#1A0D00);border-color:var(--orange);}
+.tile-mgr{width:138px;height:138px;background:linear-gradient(145deg,#1E2A3A,#111820);border-color:#4A7FAA;}
+.tile-bk{width:175px;height:175px;border-color:var(--orange);background:linear-gradient(145deg,#2A1800,#180F00);}
+.tile-icon{font-size:2.4rem;line-height:1;}
+.tile-ldr{width:130px;height:130px;background:linear-gradient(145deg,#1E1A3A,#110F20);border-color:#7A5FBF;}
+.tile-mgr .tile-icon{font-size:1.9rem;}
+.tile-bk .tile-icon{font-size:2.8rem;}
+.tile-label{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.95rem;text-transform:uppercase;letter-spacing:2px;color:#fff;}
+.tile-bk .tile-label{font-size:1.3rem;letter-spacing:3px;}
+.tile-sub{font-size:.7rem;color:#aaa;text-align:center;max-width:110px;}
+.pin-box{background:#2C2C2C;border:2px solid #444;border-radius:14px;padding:32px 28px;width:300px;max-width:94vw;box-shadow:0 0 60px rgba(0,0,0,.6);text-align:center;}
+.pin-dot{width:13px;height:13px;border-radius:50%;border:2px solid #555;background:transparent;transition:background .15s;display:inline-block;}
 .pin-dot.filled{background:var(--orange);border-color:var(--orange);}
 .pin-dot.error{background:var(--red);border-color:var(--red);}
 .pinpad{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:18px;}
 .pkey{background:#1A1A1A;border:1px solid #444;color:#fff;border-radius:9px;height:50px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1.3rem;cursor:pointer;transition:background .12s,transform .1s;}
 .pkey:active{background:#333;transform:scale(.93);}
+.pkey-back{background:#1A1000;border-color:#5A4000;color:var(--yellow);font-size:.9rem;}
 .pkey-del{background:#1A0A0A;border-color:#5A1010;color:#cc5555;}
 #app{display:none;}
-header{background:linear-gradient(135deg,var(--red),#A01800);padding:0 16px;display:flex;align-items:center;justify-content:space-between;height:58px;box-shadow:0 4px 20px rgba(0,0,0,.5);position:sticky;top:0;z-index:100;}
-header h1{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.5rem;color:var(--yellow);text-transform:uppercase;}
-#role-badge{background:var(--yellow);color:var(--dark);font-weight:700;padding:3px 10px;border-radius:20px;font-size:.72rem;text-transform:uppercase;}
-#btn-logout{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:#fff;padding:4px 12px;border-radius:20px;cursor:pointer;font-size:.78rem;font-family:Barlow,sans-serif;}
-.app-body{padding:16px;max-width:700px;margin:0 auto;}
-.tabs{display:flex;gap:4px;background:#111;border-radius:10px;padding:4px;margin-bottom:16px;overflow-x:auto;scrollbar-width:none;}
-.tabs::-webkit-scrollbar{display:none;}
-.tab{flex:1;min-width:fit-content;padding:7px 12px;border-radius:8px;border:none;background:transparent;color:#888;font-family:Barlow,sans-serif;font-weight:600;font-size:.82rem;cursor:pointer;white-space:nowrap;transition:all .15s;}
-.tab.active{background:#2A2A2A;color:#F5F0E8;}
-.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:var(--r);border:none;font-family:Barlow,sans-serif;font-weight:600;font-size:.85rem;cursor:pointer;transition:opacity .15s,transform .1s;}
-.btn:active{transform:scale(.97);}
-.btn-red{background:var(--red);color:#fff;}
-.btn-orange{background:var(--orange);color:#111;}
-.btn-green{background:var(--green);color:#fff;}
-.btn-gray{background:#333;color:#ccc;}
-.btn-block{width:100%;justify-content:center;padding:12px;}
-.card{background:#1E1E1E;border:1px solid #333;border-radius:12px;padding:14px 16px;margin-bottom:10px;}
-.fi{width:100%;background:#111;border:1px solid #444;border-radius:var(--r);color:#F5F0E8;padding:10px 12px;font-family:Barlow,sans-serif;font-size:.9rem;}
+nav{background:var(--gray);border-bottom:2px solid #333;display:flex;padding:0 12px;gap:2px;overflow-x:auto;scrollbar-width:none;}
+nav::-webkit-scrollbar{display:none;}
+nav button{background:none;border:none;color:#888;padding:13px 14px;cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:.9rem;text-transform:uppercase;letter-spacing:1px;border-bottom:3px solid transparent;white-space:nowrap;transition:color .2s;font-family:Barlow,sans-serif;}
+nav button.active{color:var(--orange);border-bottom-color:var(--orange);}
+.page{display:none;padding:16px;max-width:980px;margin:0 auto;}
+.page.active{display:block;}
+.card{background:var(--gray);border-radius:var(--r);padding:18px;margin-bottom:14px;border:1px solid #333;}
+.sec-title{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1.2rem;text-transform:uppercase;letter-spacing:2px;color:var(--orange);margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+.sec-title::after{content:'';flex:1;height:1px;background:#333;}
+.rtabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;}
+.rtab{background:#1A1A1A;border:2px solid #444;color:#888;padding:7px 16px;border-radius:20px;cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.88rem;text-transform:uppercase;letter-spacing:1px;transition:all .18s;}
+.rtab.on{background:var(--orange);border-color:var(--orange);color:#fff;}
+.rsec-hdr{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:var(--r);margin-bottom:10px;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.15rem;text-transform:uppercase;letter-spacing:2px;}
+.rsec-bk500{background:rgba(255,135,50,.12);border-left:4px solid #FF8732;color:#FF8732;}
+.rsec-bk509{background:rgba(255,107,53,.12);border-left:4px solid #FF6B35;color:#FF6B35;}
+.rsec-bk526{background:rgba(255,179,71,.12);border-left:4px solid #FFB347;color:#FFB347;}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;}
+.flabel{display:block;font-size:.78rem;color:#888;text-transform:uppercase;letter-spacing:1px;margin-bottom:5px;}
+.fi{background:#1A1A1A;border:1px solid #444;color:#fff;padding:9px 12px;border-radius:var(--r);font-family:Barlow,sans-serif;font-size:.88rem;width:100%;}
 .fi:focus{outline:none;border-color:var(--orange);}
-select.fi{appearance:none;}
-textarea.fi{min-height:80px;resize:none;}
-.fl{font-size:.75rem;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:4px;}
-.fg{margin-bottom:12px;}
-.filter-bar{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;}
-.chip{padding:5px 12px;border-radius:20px;font-size:.78rem;font-weight:600;cursor:pointer;border:1px solid #444;background:#1A1A1A;color:#888;transition:all .15s;}
-.chip.active{background:#2A1800;border-color:var(--orange);color:var(--orange);}
-.search-wrap{position:relative;}
-.search-drop{position:absolute;top:100%;left:0;right:0;background:#1E1E1E;border:1px solid #444;border-top:none;border-radius:0 0 var(--r) var(--r);z-index:50;max-height:220px;overflow-y:auto;display:none;}
-.search-item{padding:9px 13px;cursor:pointer;border-bottom:1px solid #2A2A2A;font-size:.85rem;}
-.search-item:hover{background:#2A2A2A;}
-.prob-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:8px;margin:12px 0;}
-.prob-item{background:#1A1A1A;border:1px solid #444;border-radius:var(--r);padding:9px 11px;cursor:pointer;display:flex;align-items:center;gap:8px;transition:border-color .2s,background .2s;}
-.prob-item.sel{border-color:var(--orange);background:#2A1800;}
-.prob-icon{font-size:1.1rem;}
-.prob-label{font-size:.8rem;font-weight:600;}
-.sev-grid{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0;}
-.sev-btn{padding:7px 14px;border-radius:20px;border:2px solid #444;background:#1A1A1A;cursor:pointer;font-family:Barlow,sans-serif;font-weight:700;font-size:.8rem;color:#888;transition:all .15s;}
-.sev-btn.sel{border-color:var(--orange);background:#2A1800;color:var(--orange);}
-.sev-btn.sel-major{border-color:#e74c3c;background:#2A0A0A;color:#e74c3c;}
-.sev-btn.sel-serious{border-color:#9b59b6;background:#1A0A2A;color:#9b59b6;}
-.inc-card{background:#1E1E1E;border:1px solid #333;border-left:4px solid var(--orange);border-radius:12px;padding:14px;margin-bottom:10px;}
-.inc-card.major{border-left-color:#e74c3c;}
-.inc-card.serious{border-left-color:#9b59b6;}
-.inc-tags{display:flex;gap:5px;flex-wrap:wrap;margin:6px 0;}
-.inc-tag{padding:2px 8px;border-radius:20px;font-size:.72rem;font-weight:600;background:#333;color:#ccc;}
-.badge{padding:3px 9px;border-radius:20px;font-size:.7rem;font-weight:700;}
-.badge-orange{background:#3A1E00;color:var(--orange);}
-.badge-red{background:#2A0A0A;color:#e74c3c;}
-.badge-purple{background:#1A0A2A;color:#9b59b6;}
-.emp-card{background:#1E1E1E;border:1px solid #333;border-radius:10px;padding:12px 14px;margin-bottom:8px;display:flex;align-items:center;gap:12px;}
-.emp-avatar{width:40px;height:40px;border-radius:50%;background:#2A1800;color:var(--orange);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.9rem;flex-shrink:0;}
-.letter-card{background:#1E1E1E;border:1px solid #333;border-radius:12px;padding:14px;margin-bottom:10px;}
-.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;align-items:flex-end;justify-content:center;}
-.modal-overlay.open{display:flex;animation:fi .2s ease;}
-@keyframes fi{from{opacity:0}to{opacity:1}}
-.modal{background:#1E1E1E;border-radius:16px 16px 0 0;width:100%;max-width:600px;max-height:90vh;overflow-y:auto;padding:20px;animation:su .3s ease;}
-@keyframes su{from{transform:translateY(100%)}to{transform:translateY(0)}}
-.modal-handle{width:36px;height:4px;border-radius:2px;background:#444;margin:0 auto 16px;}
+select.fi option{background:#1A1A1A;}
+textarea.fi{resize:vertical;min-height:75px;}
+.prob-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(175px,1fr));gap:9px;margin:14px 0;}
+.prob-item{display:flex;flex-direction:column;gap:0;}
+.prob-check{display:flex;align-items:center;gap:7px;background:#1A1A1A;border:1px solid #444;border-radius:var(--r);padding:9px 11px;cursor:pointer;transition:border-color .2s,background .2s;}
+.prob-check .chk{width:17px;height:17px;border:2px solid #555;border-radius:4px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:10px;}
+.prob-check.on{border-color:var(--red);background:rgba(214,35,0,.1);}
+.prob-check.on .chk{background:var(--red);border-color:var(--red);}
+.prob-extra{display:none;margin-top:4px;padding:8px;background:#111;border-radius:6px;border:1px solid #333;}
+.prob-extra.show{display:block;}
+.sev-row{display:flex;gap:7px;flex-wrap:wrap;margin:10px 0;}
+.sev-btn{padding:5px 14px;border-radius:18px;border:2px solid transparent;cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.88rem;text-transform:uppercase;letter-spacing:1px;transition:all .15s;background:#1A1A1A;}
+.btn{border:none;padding:10px 24px;border-radius:var(--r);font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.95rem;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:transform .15s;}
+.btn:active{transform:scale(.97);}
+.btn-red{background:linear-gradient(135deg,var(--red),#A01800);color:#fff;}
+.btn-gray{background:#333;color:#ddd;border:1px solid #555;}
+.btn-sm{padding:5px 10px;font-size:.78rem;letter-spacing:1px;}
+.btn-danger{background:transparent;border:1px solid #663333;color:#cc5555;padding:5px 9px;border-radius:var(--r);cursor:pointer;font-size:.78rem;transition:all .2s;}
+.btn-danger:hover{background:#441111;border-color:var(--red);color:var(--red);}
+.inc-item{background:#1A1A1A;border-left:4px solid #444;border-radius:0 var(--r) var(--r) 0;padding:11px 14px;margin-bottom:9px;display:flex;flex-direction:column;gap:5px;}
+.inc-item[data-s="1"]{border-left-color:#4CAF50;}.inc-item[data-s="2"]{border-left-color:var(--yellow);}
+.inc-item[data-s="3"]{border-left-color:var(--orange);}.inc-item[data-s="4"]{border-left-color:var(--red);}
+.inc-head{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:6px;}
+.inc-who{font-weight:600;color:var(--orange);}
+.inc-meta{font-size:.76rem;color:#888;}
+.inc-tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:3px;}
+.tag{background:#2C2C2C;border:1px solid #444;padding:2px 7px;border-radius:11px;font-size:.73rem;color:#ccc;}
+.inc-note{font-size:.83rem;color:#bbb;font-style:italic;}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;margin-bottom:16px;}
+.stat-card{background:#1A1A1A;border-radius:var(--r);padding:14px;text-align:center;border:1px solid #333;}
+.stat-n{font-family:'Barlow Condensed',sans-serif;font-size:2.3rem;font-weight:900;line-height:1;color:var(--orange);}
+.stat-l{font-size:.72rem;color:#888;margin-top:3px;text-transform:uppercase;letter-spacing:1px;}
+.tbl{width:100%;border-collapse:collapse;}
+.tbl th{text-align:left;padding:9px 11px;background:#1A1A1A;font-family:'Barlow Condensed',sans-serif;font-weight:600;text-transform:uppercase;letter-spacing:1px;font-size:.78rem;color:#888;border-bottom:2px solid #333;}
+.tbl td{padding:9px 11px;border-bottom:1px solid #2A2A2A;font-size:.87rem;}
+.score-wrap{display:flex;align-items:center;gap:7px;}
+.score-bar{flex:1;height:5px;background:#333;border-radius:3px;overflow:hidden;}
+.score-fill{height:100%;border-radius:3px;}
+.sg .score-fill{background:#4CAF50;}.so .score-fill{background:var(--yellow);}
+.sb .score-fill{background:var(--orange);}.sc .score-fill{background:var(--red);}
+.filters{display:flex;gap:9px;flex-wrap:wrap;margin-bottom:14px;}
+.filters select,.filters input{background:#1A1A1A;border:1px solid #444;color:#fff;padding:6px 11px;border-radius:var(--r);font-size:.83rem;font-family:Barlow,sans-serif;}
+.emp-card{background:#1A1A1A;border:1px solid #333;border-radius:var(--r);padding:12px 14px;display:flex;align-items:center;justify-content:space-between;margin-bottom:7px;gap:8px;}
+.emp-av{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.95rem;flex-shrink:0;}
+.av-e{background:#1E3A5F;color:#5BA3F5;}.av-m{background:#3A1E1E;color:var(--orange);}
+.av-d{background:#3A2A1E;color:var(--yellow);}.av-f{background:#3A3000;color:var(--yellow);}
+.role-pill{padding:2px 9px;border-radius:11px;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;}
+.rp-e{background:#1E3A5F;color:#5BA3F5;}.rp-m{background:#3A1E1E;color:var(--orange);}
+.rp-d{background:#3A2A1E;color:var(--yellow);}.rp-f{background:#3A3000;color:var(--yellow);}
+.rp-l{background:#1E1A3A;color:#9B7FD4;}.av-l{background:#1E1A3A;color:#9B7FD4;}
+.modal-ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:200;align-items:center;justify-content:center;}
+.modal-ov.open{display:flex;}
+.modal{background:var(--gray);border:1px solid #444;border-radius:12px;padding:26px;width:400px;max-width:94vw;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.7);}
 .modal-title{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1.2rem;text-transform:uppercase;letter-spacing:2px;color:var(--orange);margin-bottom:16px;}
-.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(20px);padding:10px 20px;border-radius:20px;font-size:.85rem;font-weight:600;z-index:999;opacity:0;transition:all .3s;white-space:nowrap;pointer-events:none;}
-.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
-.toast-ok{background:var(--green);color:#fff;}
-.toast-error{background:var(--red);color:#fff;}
-.toast-info{background:#333;color:#fff;}
-@media(min-width:600px){.modal{border-radius:16px;margin:auto;margin-bottom:20px;}.modal-overlay{align-items:center;}}
+.letter-card{background:#1A1A1A;border:1px solid #333;border-radius:var(--r);padding:16px;margin-bottom:12px;}
+.lbadge{display:inline-block;padding:2px 9px;border-radius:11px;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;}
+.lb-pend{background:#3A2A00;color:var(--yellow);}.lb-sent{background:#1E3A1E;color:#4CAF50;}.lb-rej{background:#3A1E1E;color:#cc5555;}
+.mail-tag{background:#1E2A1E;border:1px solid #3A5A3A;color:#7ACA7A;padding:3px 9px;border-radius:11px;font-size:.76rem;display:inline-flex;align-items:center;gap:5px;}
+.mail-tag button{background:none;border:none;color:#cc5555;cursor:pointer;font-size:.88rem;line-height:1;}
+#toast{position:fixed;bottom:22px;right:22px;background:#2A2A2A;border-left:4px solid var(--orange);color:#fff;padding:13px 18px;border-radius:var(--r);font-size:.88rem;box-shadow:0 8px 24px rgba(0,0,0,.5);z-index:9999;transform:translateX(120%);transition:transform .3s;max-width:300px;}
+#toast.show{transform:translateX(0);}
+#toast.success{border-left-color:#4CAF50;}#toast.error{border-left-color:var(--red);}
+.empty{text-align:center;padding:36px;color:#555;}
+.empty .ei{font-size:2.8rem;margin-bottom:10px;}
+@media(max-width:600px){.form-row{grid-template-columns:1fr;}.stats-grid{grid-template-columns:repeat(2,1fr);}.tile-bk{width:145px;height:145px;}.tile-dir{width:145px;height:145px;}}
 </style>
 </head>
 <body>
@@ -109,174 +141,300 @@ textarea.fi{min-height:80px;resize:none;}
 <div id="loading-screen">
   <div class="load-logo">BK SUIVI</div>
   <div class="load-dots"><div class="load-dot"></div><div class="load-dot"></div><div class="load-dot"></div></div>
-  <div style="font-size:.85rem;color:#888;" id="load-msg">Connexion…</div>
+  <div style="font-size:.85rem;color:#888;" id="load-msg">Connexion à la base de données…</div>
 </div>
 
 <div id="login-screen">
-  <div class="login-step" id="step-global">
-    <div style="text-align:center;margin-bottom:28px;">
-      <div style="font-size:3rem;">🍔</div>
-      <div style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:2rem;color:var(--yellow);text-transform:uppercase;letter-spacing:3px;margin-top:8px;">BK Suivi</div>
-      <div style="font-size:.85rem;color:#888;margin-top:4px;">Sélectionnez votre accès</div>
+  <div class="login-step" id="step-resto">
+    <div style="text-align:center;margin-bottom:32px;">
+      <div style="font-size:3.2rem;">👑</div>
+      <h2 style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.9rem;color:#F5A623;text-transform:uppercase;letter-spacing:3px;margin-top:6px;">BK Suivi</h2>
+      <p style="color:#888;font-size:.83rem;margin-top:4px;">Sélectionnez votre accès</p>
     </div>
     <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-bottom:20px;">
-      <div class="tile tile-admin" onclick="selectAccess('admin')"><div class="tile-icon">🛡️</div><div class="tile-label">Admin</div><div class="tile-sub">Accès total</div></div>
-      <div class="tile tile-rh" onclick="selectAccess('rh')"><div class="tile-icon">👩‍💼</div><div class="tile-label">Superviseure</div><div class="tile-sub">RH / Supervision</div></div>
+      <div class="tile tile-admin" onclick="pickGlobal('admin')"><div class="tile-icon">🛡️</div><div class="tile-label">Admin</div><div class="tile-sub">Accès total</div></div>
+      <div class="tile tile-rh" onclick="pickGlobal('rh')"><div class="tile-icon">👩‍💼</div><div class="tile-label">Superviseure</div><div class="tile-sub">RH / Supervision</div></div>
     </div>
-    <div style="font-size:.75rem;color:#555;margin-bottom:12px;text-transform:uppercase;letter-spacing:2px;">Restaurants</div>
-    <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;">
-      <div class="tile tile-bk" onclick="selectResto('bk500')" style="border-color:var(--red);"><div class="tile-icon">🍔</div><div class="tile-label">BK 500</div></div>
-      <div class="tile tile-bk" onclick="selectResto('bk509')" style="border-color:var(--orange);"><div class="tile-icon">🍔</div><div class="tile-label">BK 509</div></div>
-      <div class="tile tile-bk" onclick="selectResto('bk526')" style="border-color:#4ADE80;"><div class="tile-icon">🍔</div><div class="tile-label">BK 526</div></div>
+    <div style="width:100%;max-width:620px;height:1px;background:#333;margin-bottom:18px;"></div>
+    <p style="color:#555;font-size:.76rem;text-transform:uppercase;letter-spacing:2px;margin-bottom:16px;">Restaurants</p>
+    <div style="display:flex;gap:14px;flex-wrap:wrap;justify-content:center;">
+      <div class="tile tile-bk" onclick="pickResto('bk500')" style="border-color:#FF8732;"><div class="tile-icon">🍔</div><div class="tile-label">BK 500</div><div class="tile-sub">Sélectionner</div></div>
+      <div class="tile tile-bk" onclick="pickResto('bk509')" style="border-color:#FF6B35;"><div class="tile-icon">🍔</div><div class="tile-label">BK 509</div><div class="tile-sub">Sélectionner</div></div>
+      <div class="tile tile-bk" onclick="pickResto('bk526')" style="border-color:#FFB347;"><div class="tile-icon">🍔</div><div class="tile-label">BK 526</div><div class="tile-sub">Sélectionner</div></div>
     </div>
   </div>
 
-  <div class="login-step" id="step-profils" style="display:none;">
-    <div style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.8rem;color:var(--yellow);text-transform:uppercase;letter-spacing:3px;margin-bottom:6px;text-align:center;" id="profil-resto-label"></div>
-    <div style="font-size:.8rem;color:#888;margin-bottom:20px;text-align:center;">Qui êtes-vous ?</div>
-    <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;" id="profils-grid"></div>
-    <button class="btn btn-gray" style="margin-top:20px;" onclick="backToGlobal()">← Retour</button>
+  <div class="login-step" id="step-profiles" style="display:none;">
+    <button onclick="backToResto()" style="background:rgba(255,255,255,.1);border:1px solid #555;color:#aaa;padding:5px 14px;border-radius:18px;cursor:pointer;font-size:.8rem;margin-bottom:18px;">← Retour</button>
+    <div id="resto-title" style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.8rem;color:var(--yellow);text-transform:uppercase;letter-spacing:3px;margin-bottom:6px;text-align:center;"></div>
+    <p style="color:#888;font-size:.82rem;margin-bottom:24px;">Sélectionnez votre profil</p>
+    <div style="display:flex;gap:14px;flex-wrap:wrap;justify-content:center;margin-bottom:12px;">
+      <div class="tile tile-dir" onclick="pickProfile('directeur')" id="tile-dir"><div class="tile-icon">👔</div><div class="tile-label">Directeur</div><div class="tile-sub" id="dir-sub">Directeur</div></div>
+    </div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;">
+      <div class="tile tile-mgr" onclick="pickProfile('manager1')"><div class="tile-icon">⭐</div><div class="tile-label">Manager 1</div><div class="tile-sub" id="m1-sub">Manager 1</div></div>
+      <div class="tile tile-mgr" onclick="pickProfile('manager2')"><div class="tile-icon">⭐</div><div class="tile-label">Manager 2</div><div class="tile-sub" id="m2-sub">Manager 2</div></div>
+      <div class="tile tile-mgr" onclick="pickProfile('manager3')"><div class="tile-icon">⭐</div><div class="tile-label">Manager 3</div><div class="tile-sub" id="m3-sub">Manager 3</div></div>
+      <div class="tile tile-mgr" onclick="pickProfile('manager4')"><div class="tile-icon">⭐</div><div class="tile-label">Manager 4</div><div class="tile-sub" id="m4-sub">Manager 4</div></div>
+    </div>
   </div>
 
   <div class="login-step" id="step-pin" style="display:none;">
     <div class="pin-box">
-      <div style="font-size:1.5rem;margin-bottom:4px;" id="pin-icon"></div>
-      <div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1.1rem;color:var(--yellow);margin-bottom:2px;" id="pin-title"></div>
-      <div style="font-size:.78rem;color:#888;margin:4px 0 16px;" id="pin-sub">Code PIN à 4 chiffres</div>
-      <div class="pin-dots">
-        <div class="pin-dot" id="pd0"></div><div class="pin-dot" id="pd1"></div>
-        <div class="pin-dot" id="pd2"></div><div class="pin-dot" id="pd3"></div>
+      <div id="pin-icon" style="font-size:2.6rem;margin-bottom:7px;"></div>
+      <div id="pin-name" style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.4rem;color:var(--yellow);text-transform:uppercase;letter-spacing:2px;"></div>
+      <div id="pin-sub" style="font-size:.78rem;color:#888;margin:4px 0 18px;">Code PIN à 4 chiffres</div>
+      <div id="pin-dots" style="display:flex;justify-content:center;gap:11px;margin-bottom:12px;">
+        <div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div>
       </div>
       <div class="pinpad">
-        <button class="pkey" onclick="pinKey('1')">1</button><button class="pkey" onclick="pinKey('2')">2</button><button class="pkey" onclick="pinKey('3')">3</button>
-        <button class="pkey" onclick="pinKey('4')">4</button><button class="pkey" onclick="pinKey('5')">5</button><button class="pkey" onclick="pinKey('6')">6</button>
-        <button class="pkey" onclick="pinKey('7')">7</button><button class="pkey" onclick="pinKey('8')">8</button><button class="pkey" onclick="pinKey('9')">9</button>
-        <button class="pkey" onclick="backToGlobal()">←</button><button class="pkey" onclick="pinKey('0')">0</button><button class="pkey pkey-del" onclick="pinDel()">⌫</button>
+        <button class="pkey" onclick="pk('1')">1</button><button class="pkey" onclick="pk('2')">2</button><button class="pkey" onclick="pk('3')">3</button>
+        <button class="pkey" onclick="pk('4')">4</button><button class="pkey" onclick="pk('5')">5</button><button class="pkey" onclick="pk('6')">6</button>
+        <button class="pkey" onclick="pk('7')">7</button><button class="pkey" onclick="pk('8')">8</button><button class="pkey" onclick="pk('9')">9</button>
+        <button class="pkey pkey-back" onclick="backFromPin()">← Retour</button>
+        <button class="pkey" onclick="pk('0')">0</button>
+        <button class="pkey pkey-del" onclick="delPin()">⌫</button>
       </div>
+      <div id="pin-err" style="color:var(--red);font-size:.8rem;margin-top:12px;min-height:16px;"></div>
     </div>
   </div>
 </div>
 
 <div id="app">
   <header>
-    <h1>🍔 BK Suivi</h1>
-    <div style="display:flex;align-items:center;gap:8px;">
+    <h1>🔥 BK <span>Suivi</span></h1>
+    <div id="user-info">
+      <span id="uname"></span>
       <span id="role-badge"></span>
-      <button id="btn-logout" onclick="doLogout()">Déco.</button>
+      <button id="btn-logout" onclick="logout()">Déconnexion</button>
     </div>
   </header>
-  <div class="app-body" id="app-body"></div>
+  <nav id="main-nav">
+    <button class="active" onclick="goPage('equipe',this)">👥 Équipe</button>
+    <button onclick="goPage('incidents',this)">📋 Incidents</button>
+    <button onclick="goPage('rapports',this)">📊 Rapports</button>
+    <button onclick="goPage('validations',this)">✉️ Validations <span id="vbadge" style="background:var(--red);color:#fff;border-radius:50%;width:17px;height:17px;display:none;align-items:center;justify-content:center;font-size:.68rem;margin-left:3px;">0</span></button>
+    <button onclick="goPage('parametres',this)">⚙️ Paramètres</button>
+  </nav>
+
+  <!-- INCIDENTS -->
+  <div class="page" id="page-incidents">
+    <div class="card">
+      <div class="sec-title">⚠️ Signaler un incident</div>
+      <div class="form-row">
+        <div style="grid-column:1/-1"><label class="flabel">Équipier concerné</label>
+          <input type="text" id="emp-search" class="fi" placeholder="🔍 Rechercher par nom ou email..." oninput="filterEmpList()" autocomplete="off" style="margin-bottom:5px;">
+          <div id="emp-dropdown" style="background:#111;border:1px solid #444;border-radius:8px;max-height:200px;overflow-y:auto;display:none;"></div>
+          <div id="sel-emp-display" style="background:#1A2A1A;border:1px solid #3A5A3A;border-radius:8px;padding:9px 13px;display:none;">
+            <span id="sel-emp-name" style="color:#4CAF50;font-weight:600;"></span>
+            <span id="sel-emp-info" style="color:#888;font-size:.78rem;margin-left:8px;"></span>
+            <button onclick="clearEmpSel()" style="float:right;background:none;border:none;color:#cc5555;cursor:pointer;">✕</button>
+          </div>
+          <input type="hidden" id="sel-emp">
+        </div>
+        <div><label class="flabel">Date et heure</label><input type="datetime-local" id="inc-dt" class="fi"></div>
+      </div>
+      <label class="flabel">Type(s) d'incident</label>
+      <div class="prob-grid" id="prob-grid"></div>
+      <label class="flabel" style="margin-top:12px;">Type de sanction</label>
+      <div class="sev-row">
+        <button class="sev-btn" data-sanc="verbal" onclick="setSanction(this)" style="color:#F5A623;border-color:#F5A623;">📝 Observation verbale</button>
+        <button class="sev-btn" data-sanc="ecrit" onclick="setSanction(this)" style="color:#5BA3F5;border-color:#5BA3F5;">📄 Observation écrite</button>
+        <button class="sev-btn" data-sanc="avert" onclick="setSanction(this)" style="color:#FF8732;border-color:#FF8732;">⚠️ Avertissement</button>
+        <button class="sev-btn" data-sanc="mise" onclick="setSanction(this)" style="color:#D62300;border-color:#D62300;">🔴 Mise en demeure</button>
+      </div>
+      <label class="flabel" style="margin-top:12px;">Commentaire</label>
+      <textarea id="inc-note" class="fi" placeholder="Détails..."></textarea>
+      <div style="margin-top:13px;display:flex;gap:9px;">
+        <button class="btn btn-red" onclick="submitInc()">✔ Enregistrer</button>
+        <button class="btn btn-gray" onclick="resetForm()">✕ Réinitialiser</button>
+      </div>
+    </div>
+    <div class="sec-title" id="hist-title">🕒 Incidents récents</div>
+    <div class="filters" id="hist-filters">
+      <select id="f-who" onchange="renderHistory()"><option value="">Tous</option></select>
+      <select id="f-type" onchange="renderHistory()"><option value="">Tous types</option></select>
+      <select id="f-sev" onchange="renderHistory()">
+        <option value="">Toutes gravités</option>
+        <option value="1">🟢 Mineur</option><option value="2">🟡 Modéré</option>
+        <option value="3">🟠 Sérieux</option><option value="4">🔴 Grave</option>
+      </select>
+      <input type="date" id="f-date" onchange="renderHistory()">
+    </div>
+    <div id="inc-list"></div>
+  </div>
+
+  <!-- RAPPORTS -->
+  <div class="page" id="page-rapports">
+    <div id="rpt-tabs" class="rtabs" style="display:none;">
+      <button class="rtab on" onclick="setRptTab(this,'all')">🌐 Tous</button>
+      <button class="rtab" onclick="setRptTab(this,'bk500')">🍔 BK 500</button>
+      <button class="rtab" onclick="setRptTab(this,'bk509')">🍔 BK 509</button>
+      <button class="rtab" onclick="setRptTab(this,'bk526')">🍔 BK 526</button>
+    </div>
+    <div class="card">
+      <div class="sec-title">📊 Paramètres</div>
+      <div style="display:flex;gap:11px;flex-wrap:wrap;align-items:flex-end;">
+        <div><label class="flabel">Période</label>
+          <select id="rpt-period" class="fi" style="width:auto;">
+            <option value="today">Aujourd'hui</option>
+            <option value="week" selected>Cette semaine</option>
+            <option value="month">Ce mois</option>
+            <option value="all">Tout</option>
+          </select>
+        </div>
+        <div><label class="flabel">Membre</label>
+          <select id="rpt-person" class="fi" style="width:auto;"><option value="all">Toute l'équipe</option></select>
+        </div>
+        <button class="btn btn-red" onclick="genReport()">📊 Générer</button>
+      </div>
+    </div>
+    <div id="rpt-out"></div>
+  </div>
+
+  <!-- ÉQUIPE -->
+  <div class="page active" id="page-equipe">
+    <div id="eq-tabs" class="rtabs" style="display:none;">
+      <button class="rtab on" onclick="setEqTab(this,'all')">🌐 Tous</button>
+      <button class="rtab" onclick="setEqTab(this,'bk500')">🍔 BK 500</button>
+      <button class="rtab" onclick="setEqTab(this,'bk509')">🍔 BK 509</button>
+      <button class="rtab" onclick="setEqTab(this,'bk526')">🍔 BK 526</button>
+    </div>
+    <div style="display:flex;gap:9px;margin-bottom:14px;flex-wrap:wrap;">
+      <button class="rtab on" id="ef-actif" onclick="setEmpFilter(this,'actif')">✅ Actifs</button>
+      <button class="rtab" id="ef-archive" onclick="setEmpFilter(this,'archive')">📁 Archivés</button>
+      <button class="rtab" id="ef-tous" onclick="setEmpFilter(this,'tous')">👥 Tous</button>
+    </div>
+    <div class="card" id="add-emp-card">
+      <div class="sec-title">➕ Ajouter un membre</div>
+      <div class="form-row">
+        <div><label class="flabel">Prénom Nom</label><input type="text" id="new-name" class="fi" placeholder="Jean Dupont"></div>
+        <div><label class="flabel">Rôle</label>
+          <select id="new-role" class="fi">
+            <option value="equipier">Équipier</option>
+            <option value="leader">Leader</option>
+            <option value="manager">Manager</option>
+            <option value="directeur">Directeur</option>
+          </select>
+        </div>
+      </div>
+      <div id="new-resto-row" style="display:none;margin-bottom:12px;">
+        <label class="flabel">Restaurant</label>
+        <select id="new-resto" class="fi" style="max-width:220px;">
+          <option value="bk500">BK 500</option>
+          <option value="bk509">BK 509</option>
+          <option value="bk526">BK 526</option>
+        </select>
+      </div>
+      <button class="btn btn-red" onclick="addEmp()">➕ Ajouter</button>
+    </div>
+    <div id="eq-list"></div>
+  </div>
+
+  <!-- VALIDATIONS -->
+  <div class="page" id="page-validations">
+    <div class="card">
+      <div class="sec-title">✉️ Courriers en attente</div>
+      <p style="font-size:.83rem;color:#aaa;margin-bottom:14px;">Relisez, modifiez si besoin, puis validez pour envoyer.</p>
+      <div id="letters-list"></div>
+    </div>
+  </div>
+
+  <!-- PARAMÈTRES -->
+  <div class="page" id="page-parametres">
+    <div class="card">
+      <div class="sec-title">🔑 Codes PIN</div>
+      <div id="pin-settings" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:11px;"></div>
+      <button class="btn btn-red" style="margin-top:14px;" onclick="savePins()">💾 Enregistrer les PIN</button>
+    </div>
+    <div class="card">
+      <div class="sec-title">✏️ Noms des profils</div>
+      <div id="names-settings" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:11px;"></div>
+      <button class="btn btn-red" style="margin-top:14px;" onclick="saveNames()">💾 Enregistrer les noms</button>
+    </div>
+    <div class="card">
+      <div class="sec-title">📬 Rapports automatiques</div>
+      <div class="form-row">
+        <div><label class="flabel">⏰ Heure d'envoi</label><input type="time" id="rpt-time" class="fi" value="22:00"></div>
+        <div><label class="flabel">📅 Fréquences</label>
+          <div style="margin-top:6px;display:flex;flex-direction:column;gap:5px;">
+            <label style="display:flex;align-items:center;gap:7px;font-size:.86rem;color:#ccc;cursor:pointer;"><input type="checkbox" id="sch-daily" checked style="accent-color:var(--orange);"> Tous les jours</label>
+            <label style="display:flex;align-items:center;gap:7px;font-size:.86rem;color:#ccc;cursor:pointer;"><input type="checkbox" id="sch-weekly" checked style="accent-color:var(--orange);"> Chaque lundi</label>
+            <label style="display:flex;align-items:center;gap:7px;font-size:.86rem;color:#ccc;cursor:pointer;"><input type="checkbox" id="sch-monthly" checked style="accent-color:var(--orange);"> Le 1er du mois</label>
+          </div>
+        </div>
+      </div>
+      <div style="margin-top:12px;">
+        <label class="flabel">📧 Destinataires des rapports</label>
+        <div style="display:flex;gap:8px;margin-top:6px;flex-wrap:wrap;">
+          <select id="new-mail-role" class="fi" style="width:auto;"><option value="RH">RH</option><option value="Directeur">Directeur</option><option value="Superviseur">Superviseur</option><option value="Franchisé">Franchisé</option></select>
+          <input type="email" id="new-mail" class="fi" placeholder="email@exemple.com" style="flex:1;min-width:180px;">
+          <button class="btn btn-red" onclick="addMailRcp()">➕</button>
+        </div>
+        <div id="mail-rcps" style="display:flex;flex-wrap:wrap;gap:7px;margin-top:11px;"></div>
+      </div>
+      <div style="margin-top:14px;">
+        <label class="flabel">👥 Copies courriers employés</label>
+        <div style="display:flex;gap:8px;margin-top:6px;flex-wrap:wrap;">
+          <input type="email" id="new-cc" class="fi" placeholder="email@exemple.com" style="flex:1;min-width:180px;">
+          <button class="btn btn-red" onclick="addCC()">➕</button>
+        </div>
+        <div id="cc-rcps" style="display:flex;flex-wrap:wrap;gap:7px;margin-top:11px;"></div>
+      </div>
+      <button class="btn btn-red" style="margin-top:16px;" onclick="saveMailSettings()">💾 Enregistrer</button>
+      <div style="margin-top:18px;padding-top:14px;border-top:1px solid #333;">
+        <p style="font-size:.78rem;color:#888;margin-bottom:9px;">📤 Tester l'envoi :</p>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <button class="btn btn-gray btn-sm" onclick="sendNow('today')">Aujourd'hui</button>
+          <button class="btn btn-gray btn-sm" onclick="sendNow('week')">Semaine</button>
+          <button class="btn btn-gray btn-sm" onclick="sendNow('month')">Mois</button>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 
-<!-- MODAL INCIDENT -->
-<div class="modal-overlay" id="modal-inc">
-<div class="modal">
-  <div class="modal-handle"></div>
-  <div class="modal-title">⚠️ Signaler un incident</div>
-  <div class="fg"><label class="fl">Équipier</label>
-    <div class="search-wrap">
-      <input class="fi" id="inc-search" placeholder="Rechercher un équipier..." oninput="searchEmp(this.value,'inc-drop','inc-emp-id','inc-search')" autocomplete="off">
-      <div class="search-drop" id="inc-drop"></div>
-    </div>
-    <input type="hidden" id="inc-emp-id">
-  </div>
-  <div class="fg"><label class="fl">Date & heure</label><input class="fi" type="datetime-local" id="inc-dt"></div>
-  <div class="fg"><label class="fl">Type d'incident</label><div class="prob-grid" id="prob-grid"></div></div>
-  <div id="extra-fields"></div>
-  <div class="fg"><label class="fl">Gravité</label>
-    <div class="sev-grid">
-      <button class="sev-btn" onclick="selSev('minor',this)">🟡 Mineur</button>
-      <button class="sev-btn" onclick="selSev('major',this)">🔴 Majeur</button>
-      <button class="sev-btn" onclick="selSev('serious',this)">🟣 Grave</button>
+<!-- MODALS -->
+<div class="modal-ov" id="modal-edit">
+  <div class="modal">
+    <div class="modal-title">✏️ Modifier</div>
+    <input type="hidden" id="edit-id">
+    <div style="margin-bottom:11px;"><label class="flabel">Prénom Nom</label><input type="text" id="edit-name" class="fi"></div>
+    <div style="margin-bottom:11px;"><label class="flabel">Rôle</label><select id="edit-role" class="fi"><option value="equipier">Équipier</option><option value="leader">Leader</option><option value="manager">Manager</option><option value="directeur">Directeur</option></select></div>
+    <div style="margin-bottom:11px;"><label class="flabel">E-mail</label><input type="email" id="edit-email" class="fi" placeholder="email@exemple.com"></div>
+    <div id="edit-exit-date-row" style="display:none;margin-bottom:11px;"><label class="flabel">📅 Date de sortie définitive</label><input type="date" id="edit-exit-def" class="fi"></div>
+    <div style="display:flex;gap:9px;margin-top:16px;justify-content:flex-end;">
+      <button class="btn btn-gray" onclick="closeModal('modal-edit')">Annuler</button>
+      <button class="btn btn-red" onclick="saveEdit()">💾 Enregistrer</button>
     </div>
   </div>
-  <div class="fg"><label class="fl">Note (optionnel)</label><textarea class="fi" id="inc-note" placeholder="Observations..."></textarea></div>
-  <div style="display:flex;gap:8px;">
-    <button class="btn btn-gray" onclick="closeModal('modal-inc')">Annuler</button>
-    <button class="btn btn-red btn-block" onclick="submitInc()">Enregistrer</button>
-  </div>
-</div></div>
+</div>
 
-<!-- MODAL EDIT EMP -->
-<div class="modal-overlay" id="modal-edit-emp">
-<div class="modal">
-  <div class="modal-handle"></div>
-  <div class="modal-title" id="edit-emp-title">✏️ Modifier</div>
-  <input type="hidden" id="edit-emp-id">
-  <div class="fg"><label class="fl">Nom</label><input class="fi" id="edit-name"></div>
-  <div class="fg"><label class="fl">Rôle</label><select class="fi" id="edit-role"><option value="equipier">Équipier</option><option value="manager">Manager</option><option value="directeur">Directeur</option></select></div>
-  <div class="fg"><label class="fl">Email</label><input class="fi" id="edit-email" type="email"></div>
-  <div class="fg"><label class="fl">Téléphone</label><input class="fi" id="edit-phone" type="tel"></div>
-  <div style="display:flex;gap:8px;">
-    <button class="btn btn-gray" onclick="closeModal('modal-edit-emp')">Annuler</button>
-    <button class="btn btn-orange btn-block" onclick="saveEditEmp()">💾 Enregistrer</button>
-  </div>
-  <button class="btn btn-red btn-block" style="margin-top:8px;" onclick="archiveEmp()">📦 Archiver</button>
-</div></div>
-
-<!-- MODAL ADD EMP -->
-<div class="modal-overlay" id="modal-add-emp">
-<div class="modal">
-  <div class="modal-handle"></div>
-  <div class="modal-title">➕ Ajouter un équipier</div>
-  <div class="fg"><label class="fl">Nom complet</label><input class="fi" id="new-name"></div>
-  <div class="fg"><label class="fl">Restaurant</label><select class="fi" id="new-resto"><option value="bk500">BK 500</option><option value="bk509">BK 509</option><option value="bk526">BK 526</option></select></div>
-  <div class="fg"><label class="fl">Email</label><input class="fi" id="new-email" type="email"></div>
-  <div class="fg"><label class="fl">Téléphone</label><input class="fi" id="new-phone" type="tel"></div>
-  <div style="display:flex;gap:8px;">
-    <button class="btn btn-gray" onclick="closeModal('modal-add-emp')">Annuler</button>
-    <button class="btn btn-green btn-block" onclick="addEmp()">✅ Ajouter</button>
-  </div>
-</div></div>
-
-<!-- MODAL LETTER -->
-<div class="modal-overlay" id="modal-letter">
-<div class="modal">
-  <div class="modal-handle"></div>
-  <div class="modal-title">📄 Courrier RH</div>
-  <div class="fg"><label class="fl">Équipier</label>
-    <div class="search-wrap">
-      <input class="fi" id="let-search" placeholder="Rechercher..." oninput="searchEmp(this.value,'let-drop','let-emp-id','let-search')" autocomplete="off">
-      <div class="search-drop" id="let-drop"></div>
+<div class="modal-ov" id="modal-exit">
+  <div class="modal" style="border-color:#663333;">
+    <div class="modal-title" style="color:var(--red);">📤 Sortie de l'équipier</div>
+    <p style="font-size:.82rem;color:#aaa;margin-bottom:14px;">La fiche et l'historique sont conservés.</p>
+    <input type="hidden" id="exit-id">
+    <div style="margin-bottom:11px;"><label class="flabel">Motif</label>
+      <select id="exit-motif" class="fi">
+        <option value="fin_contrat">Fin de contrat</option><option value="demission">Démission</option>
+        <option value="licenciement">Licenciement</option><option value="mutation">Mutation</option><option value="autre">Autre</option>
+      </select>
     </div>
-    <input type="hidden" id="let-emp-id">
+    <div style="margin-bottom:11px;"><label class="flabel">Date de sortie</label><input type="date" id="exit-date" class="fi"></div>
+    <div style="margin-bottom:11px;"><label class="flabel">Commentaire</label><textarea id="exit-note" class="fi" style="min-height:55px;"></textarea></div>
+    <div style="display:flex;gap:9px;margin-top:16px;justify-content:flex-end;">
+      <button class="btn btn-gray" onclick="closeModal('modal-exit')">Annuler</button>
+      <button class="btn btn-red" onclick="confirmExit()">📤 Confirmer</button>
+    </div>
   </div>
-  <div class="fg"><label class="fl">Type</label>
-    <select class="fi" id="let-type">
-      <option value="avertissement">⚠️ Avertissement</option>
-      <option value="mise_en_garde">🔶 Mise en garde</option>
-      <option value="convocation">📋 Convocation</option>
-      <option value="licenciement">🚫 Licenciement</option>
-      <option value="autre">📝 Autre</option>
-    </select>
-  </div>
-  <div class="fg"><label class="fl">Objet</label><input class="fi" id="let-subject"></div>
-  <div class="fg"><label class="fl">Contenu</label><textarea class="fi" id="let-body" style="min-height:120px;"></textarea></div>
-  <div style="display:flex;gap:8px;">
-    <button class="btn btn-gray" onclick="closeModal('modal-letter')">Annuler</button>
-    <button class="btn btn-orange btn-block" onclick="saveLetter()">💾 Enregistrer</button>
-  </div>
-</div></div>
+</div>
 
-<!-- MODAL SETTINGS -->
-<div class="modal-overlay" id="modal-settings">
-<div class="modal">
-  <div class="modal-handle"></div>
-  <div class="modal-title">⚙️ Paramètres</div>
-  <div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1rem;color:var(--orange);margin-bottom:10px;">🔑 Codes PIN</div>
-  <div id="pin-settings-content"></div>
-  <button class="btn btn-orange btn-block" style="margin-top:8px;" onclick="savePins()">💾 Enregistrer les PIN</button>
-  <div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1rem;color:var(--orange);margin:20px 0 10px;">✏️ Noms des profils</div>
-  <div id="names-settings-content"></div>
-  <button class="btn btn-orange btn-block" style="margin-top:8px;" onclick="saveNames()">💾 Enregistrer les noms</button>
-  <button class="btn btn-gray btn-block" style="margin-top:12px;" onclick="closeModal('modal-settings')">Fermer</button>
-</div></div>
-
-<div class="toast" id="toast"></div>
+<div id="toast"></div>
 
 <script>
 // ══════════════════════════════════════════════════════════════════════════════
-// BK SUIVI v3 — Architecture Supabase-first (comme BK Technique)
+// BK SUIVI v4 — Supabase-first (architecture propre)
 // ══════════════════════════════════════════════════════════════════════════════
 
 const SUPA_URL = 'https://kzkopbvythfhdnjlnphm.supabase.co';
@@ -306,556 +464,963 @@ const sb = {
       body: JSON.stringify(data)
     });
     return r.ok;
+  },
+  async del(table, where) {
+    const r = await fetch(SUPA_URL+'/rest/v1/'+table+'?'+where, {
+      method: 'DELETE',
+      headers: { apikey: SUPA_KEY, Authorization: 'Bearer '+SUPA_KEY }
+    });
+    return r.ok;
   }
 };
 
-// ── ÉTAT ─────────────────────────────────────────────────────────────────────
-var S = { employees: [], incidents: [], letters: [], settings: null };
-var curUser = null;
-var syncInterval = null;
-var currentTab = 'incidents';
-
-var RESTOS = { bk500: { id:'bk500', label:'BK 500' }, bk509: { id:'bk509', label:'BK 509' }, bk526: { id:'bk526', label:'BK 526' } };
-
-var PROBLEMS = [
-  {id:'lavage',icon:'🙌',label:'Lavage des mains'},
-  {id:'rasage',icon:'🪒',label:'Non rasé'},
-  {id:'proprete',icon:'🧼',label:'Manque de propreté'},
-  {id:'uniforme',icon:'👕',label:'Uniforme non conforme'},
-  {id:'retard',icon:'⏰',label:'Retard',extra:{type:'time',label:"Heure d'arrivée"}},
-  {id:'absence',icon:'🚫',label:'Absence injustifiée',extra:{type:'date',label:"Jour d'absence"}},
-  {id:'abandon',icon:'🏃',label:'Abandon de poste'},
-  {id:'lenteur',icon:'🐢',label:'Travail lent'},
-  {id:'impolitesse',icon:'😤',label:'Impolitesse'},
-  {id:'gros_mots',icon:'🤬',label:'Gros mots'},
-  {id:'telephone',icon:'📵',label:'Téléphone au poste'},
-  {id:'refus',icon:'🙅',label:"Refus d'obéir"},
-  {id:'hygiene',icon:'🧽',label:'Hygiène alimentaire'},
-  {id:'autre',icon:'❗',label:'Autre'},
-];
-
-var SEV_LABELS = { minor:'🟡 Mineur', major:'🔴 Majeur', serious:'🟣 Grave' };
-var LETTER_LABELS = { avertissement:'Avertissement', mise_en_garde:'Mise en garde', convocation:'Convocation', licenciement:'Licenciement', autre:'Courrier' };
-var DEFAULT_SETT = {
-  global_pins: { admin:'0000', rh:'0000' },
-  resto_pins: {
+// ── ÉTAT GLOBAL (Supabase = source unique) ────────────────────────────────────
+var DB = {
+  employees: [],
+  incidents: [],
+  letters: [],
+  globalPins: { admin: '0000', rh: '0000' },
+  restoPins: {
     bk500:{directeur:'0000',manager1:'0000',manager2:'0000',manager3:'0000',manager4:'0000'},
     bk509:{directeur:'0000',manager1:'0000',manager2:'0000',manager3:'0000',manager4:'0000'},
     bk526:{directeur:'0000',manager1:'0000',manager2:'0000',manager3:'0000',manager4:'0000'}
   },
-  resto_names: {
+  restoNames: {
     bk500:{directeur:'Directeur',manager1:'Manager 1',manager2:'Manager 2',manager3:'Manager 3',manager4:'Manager 4'},
     bk509:{directeur:'Directeur',manager1:'Manager 1',manager2:'Manager 2',manager3:'Manager 3',manager4:'Manager 4'},
     bk526:{directeur:'Directeur',manager1:'Manager 1',manager2:'Manager 2',manager3:'Manager 3',manager4:'Manager 4'}
-  }
+  },
+  mailSettings: { time:'22:00', daily:true, weekly:true, monthly:true, recipients:[], ccRecipients:[] }
 };
 
-// ── CHARGEMENT ────────────────────────────────────────────────────────────────
+var curUser = null;
+var pinProf = null;
+var pinVal = '';
+var curResto = null;
+var syncInterval = null;
+var selProbs = new Set();
+var selSev = null;
+var selSanction = null;
+var extraData = {};
+var empFilter = 'actif';
+var eqTab = 'all';
+var rptTab = 'all';
+
+const RESTOS = {bk500:{id:'bk500',label:'BK 500'},bk509:{id:'bk509',label:'BK 509'},bk526:{id:'bk526',label:'BK 526'}};
+const GLOBALS = {admin:{key:'admin',icon:'🛡️',title:'Admin',sub:'Accès total',role:'franchise'},rh:{key:'rh',icon:'👩‍💼',title:'Superviseure',sub:'RH / Supervision',role:'franchise'}};
+const PROFILES = {directeur:{key:'directeur',icon:'👔',title:'Directeur',role:'directeur'},manager1:{key:'manager1',icon:'⭐',title:'Manager 1',role:'manager'},manager2:{key:'manager2',icon:'⭐',title:'Manager 2',role:'manager'},manager3:{key:'manager3',icon:'⭐',title:'Manager 3',role:'manager'},manager4:{key:'manager4',icon:'⭐',title:'Manager 4',role:'manager'}};
+const PROBS = [
+  {id:'lavage',icon:'🙌',label:'Lavage des mains',extra:null},
+  {id:'rasage',icon:'🪒',label:'Non rasé',extra:null},
+  {id:'proprete',icon:'🧼',label:'Manque de propreté',extra:null},
+  {id:'uniforme',icon:'👕',label:'Uniforme non conforme',extra:null},
+  {id:'retard',icon:'⏰',label:'Retard',extra:{type:'retard',label:'Retard'}},
+  {id:'absence',icon:'🚫',label:'Absence injustifiée',extra:{type:'multi_date',label:'Absence'}},
+  {id:'arret_maladie',icon:'🏥',label:'Arrêt maladie',extra:{type:'date_range',label:'Arrêt maladie'}},
+  {id:'abandon',icon:'🏃',label:'Abandon de poste',extra:null},
+  {id:'lenteur',icon:'🐢',label:'Travail lent exprès',extra:null},
+  {id:'impolitesse',icon:'😤',label:'Impolitesse',extra:null},
+  {id:'gros_mots',icon:'🤬',label:'Gros mots',extra:null},
+  {id:'telephone',icon:'📵',label:'Téléphone au poste',extra:null},
+  {id:'refus',icon:'🙅',label:"Refus d'obéir",extra:null},
+  {id:'hygiene',icon:'🧽',label:'Hygiène alimentaire',extra:null},
+  {id:'autre',icon:'❗',label:'Autre',extra:null},
+];
+const SANCTIONS = {
+  verbal:{label:'Observation verbale',icon:'📝',color:'#F5A623'},
+  ecrit:{label:'Observation écrite',icon:'📄',color:'#5BA3F5'},
+  avert:{label:'Avertissement',icon:'⚠️',color:'#FF8732'},
+  mise:{label:'Mise en demeure',icon:'🔴',color:'#D62300'}
+};
+function cap(s){return s?s.charAt(0).toUpperCase()+s.slice(1):'';}
+
+// ── CHARGEMENT SUPABASE ───────────────────────────────────────────────────────
 async function loadAll() {
-  var results = await Promise.all([
+  const [emps, incs, lets, settArr] = await Promise.all([
     sb.get('bks_employees','select=*&order=name.asc'),
     sb.get('bks_incidents','select=*&order=created_at.desc'),
     sb.get('bks_letters','select=*&order=created_at.desc'),
     sb.get('bks_settings','select=*&id=eq.main'),
   ]);
-  S.employees = results[0] || [];
-  S.incidents = (results[1]||[]).map(function(i){ return {id:i.id,empId:i.emp_id,restoId:i.resto_id,severity:i.severity,problems:i.problems||[],extra:i.extra||{},note:i.note||'',createdBy:i.created_by,createdAt:i.created_at}; });
-  S.letters = (results[2]||[]).map(function(l){ return {id:l.id,empId:l.emp_id,restoId:l.resto_id,type:l.type,subject:l.subject||'',body:l.body||'',status:l.status||'pending',sentAt:l.sent_at,createdAt:l.created_at}; });
-  var sa = results[3];
-  S.settings = (sa && sa[0]) ? sa[0] : DEFAULT_SETT;
+  DB.employees = (emps||[]).map(function(e){
+    return {id:e.id,name:e.name,role:e.role,restoId:e.resto_id,tileKey:e.tile_key||'',
+      email:e.email||'',phone:e.phone||'',archived:!!e.archived,
+      exitDate:e.exit_date||'',exitMotif:e.exit_motif||'',exitNote:e.exit_note||''};
+  });
+  DB.incidents = (incs||[]).map(function(i){
+    return {id:i.id,empId:i.emp_id,restoId:i.resto_id,reporterId:i.reporter_id||'',
+      reporterName:i.reporter_name||'',datetime:i.inc_datetime||i.created_at,
+      problems:i.problems||[],extraData:i.extra||{},severity:i.severity||'2',
+      sanctionType:i.sanction_type||'ecrit',note:i.note||'',createdAt:i.created_at};
+  });
+  DB.letters = (lets||[]).map(function(l){
+    return {id:l.id,incidentId:l.incident_id||'',empId:l.emp_id,empName:l.emp_name||'',
+      empEmail:l.emp_email||'',sanctionType:l.sanction_type||'ecrit',type:l.type||'observation',
+      status:l.status||'pending',sigStatus:l.sig_status||'pending',text:l.body||'',
+      createdAt:l.created_at,createdBy:l.created_by||'',sentAt:l.sent_at||null,
+      signedAt:l.signed_at||null,refusedAt:l.refused_at||null};
+  });
+  const sett = settArr && settArr[0];
+  if (sett) {
+    if (sett.global_pins) DB.globalPins = sett.global_pins;
+    if (sett.resto_pins) DB.restoPins = sett.resto_pins;
+    if (sett.resto_names) DB.restoNames = sett.resto_names;
+    if (sett.mail_settings) DB.mailSettings = sett.mail_settings;
+  }
+}
+
+async function saveDB() {
+  try {
+    await sb.patch('bks_settings','id=eq.main',{
+      global_pins:DB.globalPins, resto_pins:DB.restoPins,
+      resto_names:DB.restoNames, mail_settings:DB.mailSettings,
+      updated_at:new Date().toISOString()
+    });
+  } catch(e) { console.warn('saveDB',e); }
 }
 
 function startSync() {
   if (syncInterval) clearInterval(syncInterval);
   syncInterval = setInterval(async function() {
     if (!curUser) return;
-    try { await loadAll(); renderTab(); } catch(e) { console.warn('sync',e); }
+    try {
+      await loadAll();
+      renderHistory();
+      updateVBadge();
+    } catch(e) { console.warn('sync',e); }
   }, 5000);
 }
 
 // ── INIT ──────────────────────────────────────────────────────────────────────
 (async function() {
   try {
-    document.getElementById('load-msg').textContent = 'Chargement des données…';
     await loadAll();
+    // Vérifier page signature
+    var hash = window.location.hash;
+    if (hash.indexOf('#sign/') === 0) {
+      showSignPage(hash.slice(6));
+      return;
+    }
     document.getElementById('loading-screen').style.display = 'none';
     document.getElementById('login-screen').style.display = 'block';
-    showStep('step-global');
   } catch(e) {
-    document.getElementById('load-msg').textContent = '⚠️ Erreur — vérifiez votre réseau';
+    document.getElementById('load-msg').textContent = '⚠️ Erreur connexion — vérifiez votre réseau';
     console.error(e);
   }
 })();
 
-// ── UTILS ─────────────────────────────────────────────────────────────────────
-function showToast(msg, type) {
-  var t = document.getElementById('toast');
-  t.textContent = msg;
-  t.className = 'toast toast-'+(type||'info')+' show';
-  setTimeout(function(){ t.classList.remove('show'); }, 3000);
-}
-function openModal(id) { document.getElementById(id).classList.add('open'); }
-function closeModal(id) { document.getElementById(id).classList.remove('open'); }
-function initials(name) { return (name||'?').split(' ').map(function(w){return w[0];}).join('').substring(0,2).toUpperCase(); }
-function fmtDate(iso) {
-  if (!iso) return '—';
-  var d = new Date(iso);
-  return d.toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit',year:'numeric'})+' '+d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
-}
-
 // ── LOGIN ─────────────────────────────────────────────────────────────────────
-var pinVal = '';
-var pendingAccess = null;
-
 function showStep(id) {
-  ['step-global','step-profils','step-pin'].forEach(function(s){
+  ['step-resto','step-profiles','step-pin'].forEach(function(s){
     var el = document.getElementById(s);
-    if (el) el.style.display = s===id ? 'flex' : 'none';
+    if (el) el.style.display = s===id?'flex':'none';
   });
 }
 
-function selectAccess(key) {
-  pendingAccess = { type:'global', key:key };
-  var icons = { admin:'🛡️', rh:'👩‍💼' };
-  var titles = { admin:'Admin', rh:'Superviseure' };
-  document.getElementById('pin-icon').textContent = icons[key];
-  document.getElementById('pin-title').textContent = titles[key];
-  document.getElementById('pin-sub').textContent = 'Code PIN à 4 chiffres';
-  pinVal = ''; updatePinDots();
+function pickGlobal(key) {
+  curResto = null;
+  var g = GLOBALS[key];
+  pinProf = {key:key,icon:g.icon,title:g.title,sub:g.sub,role:g.role,pin:DB.globalPins[key]||'0000'};
+  openPin();
+}
+
+function pickResto(restoId) {
+  curResto = restoId;
+  var names = DB.restoNames[restoId] || {};
+  document.getElementById('resto-title').textContent = RESTOS[restoId].label;
+  ['dir','m1','m2','m3','m4'].forEach(function(k,i){
+    var keys = ['directeur','manager1','manager2','manager3','manager4'];
+    var el = document.getElementById(k+'-sub');
+    if (el) el.textContent = names[keys[i]] || PROFILES[keys[i]].title;
+  });
+  ['l1','l2','l3','l4'].forEach(function(k,i){
+    var keys = ['leader1','leader2','leader3','leader4'];
+    var el = document.getElementById(k+'-sub');
+    if (el) el.textContent = names[keys[i]] || PROFILES[keys[i]].title;
+  });
+  showStep('step-profiles');
+}
+
+function pickProfile(profileKey) {
+  var tmpl = PROFILES[profileKey];
+  var names = DB.restoNames[curResto] || {};
+  var pins = DB.restoPins[curResto] || {};
+  pinProf = {key:profileKey,icon:tmpl.icon,title:names[profileKey]||tmpl.title,sub:RESTOS[curResto].label,role:tmpl.role,pin:pins[profileKey]||'0000',restoId:curResto};
+  openPin();
+}
+
+function openPin() {
+  document.getElementById('pin-icon').textContent = pinProf.icon;
+  document.getElementById('pin-name').textContent = pinProf.title;
+  document.getElementById('pin-sub').textContent = pinProf.sub || 'Code PIN à 4 chiffres';
+  document.getElementById('pin-err').textContent = '';
+  pinVal = '';
+  updatePinDots();
   showStep('step-pin');
 }
 
-function selectResto(restoId) {
-  var sett = S.settings || DEFAULT_SETT;
-  var names = (sett.resto_names||{})[restoId] || {};
-  var grid = document.getElementById('profils-grid');
-  document.getElementById('profil-resto-label').textContent = RESTOS[restoId].label;
-  var profils = [
-    {key:'directeur',icon:'👔',label:names.directeur||'Directeur'},
-    {key:'manager1',icon:'⭐',label:names.manager1||'Manager 1'},
-    {key:'manager2',icon:'⭐',label:names.manager2||'Manager 2'},
-    {key:'manager3',icon:'⭐',label:names.manager3||'Manager 3'},
-    {key:'manager4',icon:'⭐',label:names.manager4||'Manager 4'},
-  ];
-  grid.innerHTML = profils.map(function(p){
-    return '<div class="tile tile-mgr" onclick="selectProfil(\''+restoId+'\',\''+p.key+'\',\''+p.label+'\',\''+p.icon+'\')" style="width:120px;height:120px;"><div class="tile-icon">'+p.icon+'</div><div class="tile-label" style="font-size:.75rem;text-align:center;">'+p.label+'</div></div>';
-  }).join('');
-  showStep('step-profils');
+function backToResto() { showStep('step-resto'); }
+function backFromPin() {
+  if (curResto) showStep('step-profiles');
+  else showStep('step-resto');
 }
 
-function selectProfil(restoId, key, label, icon) {
-  pendingAccess = { type:'profile', restoId:restoId, key:key, label:label };
-  document.getElementById('pin-icon').textContent = icon;
-  document.getElementById('pin-title').textContent = label;
-  document.getElementById('pin-sub').textContent = RESTOS[restoId].label+' · Code PIN';
-  pinVal = ''; updatePinDots();
-  showStep('step-pin');
-}
-
-function backToGlobal() { pinVal=''; updatePinDots(); pendingAccess=null; showStep('step-global'); }
-
-function pinKey(k) {
+function pk(k) {
   if (pinVal.length >= 4) return;
-  pinVal += k; updatePinDots();
+  pinVal += k;
+  updatePinDots();
   if (pinVal.length === 4) setTimeout(checkPin, 100);
 }
-function pinDel() { pinVal = pinVal.slice(0,-1); updatePinDots(); }
+function delPin() { pinVal = pinVal.slice(0,-1); updatePinDots(); }
 
-function updatePinDots(error) {
+function updatePinDots(err) {
+  var dots = document.getElementById('pin-dots').children;
   for (var i=0; i<4; i++) {
-    var d = document.getElementById('pd'+i);
-    d.className = 'pin-dot';
-    if (error) d.classList.add('error');
-    else if (i < pinVal.length) d.classList.add('filled');
+    dots[i].className = 'pin-dot';
+    if (err) dots[i].classList.add('error');
+    else if (i < pinVal.length) dots[i].classList.add('filled');
   }
 }
 
 function checkPin() {
-  var sett = S.settings || DEFAULT_SETT;
-  var ok = false, userObj = null;
-  if (pendingAccess.type === 'global') {
-    var pins = sett.global_pins || {};
-    ok = pins[pendingAccess.key] === pinVal;
-    if (ok) userObj = { id:pendingAccess.key, name:pendingAccess.key==='admin'?'Admin':'Superviseure', role:pendingAccess.key==='admin'?'franchise':'rh', restoId:null, label:pendingAccess.key==='admin'?'Admin':'RH' };
-  } else {
-    var rpins = (sett.resto_pins||{})[pendingAccess.restoId] || {};
-    ok = rpins[pendingAccess.key] === pinVal;
-    if (ok) userObj = { id:pendingAccess.key, name:pendingAccess.label, role:pendingAccess.key==='directeur'?'directeur':'manager', restoId:pendingAccess.restoId, label:pendingAccess.label };
-  }
-  if (ok && userObj) {
-    curUser = userObj;
+  if (pinVal === pinProf.pin) {
+    var r = pinProf.role;
+    curUser = {id:pinProf.key,name:pinProf.title,role:r,restoId:pinProf.restoId||null};
     document.getElementById('login-screen').style.display = 'none';
     document.getElementById('app').style.display = 'block';
-    document.getElementById('role-badge').textContent = userObj.label;
+    document.getElementById('uname').textContent = pinProf.title;
+    var roleLabels = {franchise:'Admin/RH',directeur:'Directeur',manager:'Manager',leader:'Leader',equipier:'Équipier'};
+    document.getElementById('role-badge').textContent = roleLabels[r]||r;
+    // Afficher onglets selon rôle
+    var isGlobal = r==='franchise';
+    var isDir = r==='directeur';
+    var isMgr = r==='manager';
+    var canSeeAll = isGlobal || isDir;
+    document.getElementById('eq-tabs').style.display = isGlobal?'flex':'none';
+    document.getElementById('rpt-tabs').style.display = isGlobal?'flex':'none';
+    // Masquer onglets selon rôle
+    var navBtns = document.querySelectorAll('#main-nav button');
+    navBtns.forEach(function(b){
+      var txt = b.textContent.trim();
+      if (isMgr) {
+        // Manager : uniquement Incidents
+        b.style.display = (txt.indexOf('Incidents')>=0) ? '' : 'none';
+      } else if (!canSeeAll) {
+        b.style.display = '';
+      } else {
+        b.style.display = '';
+      }
+    });
+    if (isGlobal) document.getElementById('new-resto-row').style.display = 'block';
+    if (isMgr) {
+      // Manager démarre sur Incidents
+      document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active');});
+      document.getElementById('page-incidents').classList.add('active');
+    }
+    initForm();
+    renderEquipe();
+    renderHistory();
+    updateVBadge();
+    loadMailSettings();
+    renderPinSettings();
+    renderNamesSettings();
+    renderMailRcps();
+    renderCCRcps();
     startSync();
-    renderApp();
   } else {
     updatePinDots(true);
-    setTimeout(function(){ pinVal=''; updatePinDots(); }, 700);
+    document.getElementById('pin-err').textContent = 'Code incorrect';
+    setTimeout(function(){ pinVal=''; updatePinDots(); document.getElementById('pin-err').textContent=''; }, 800);
   }
 }
 
-function doLogout() {
+function logout() {
   if (syncInterval) clearInterval(syncInterval);
-  curUser = null;
+  curUser = null; pinProf = null; pinVal = ''; curResto = null;
   document.getElementById('app').style.display = 'none';
   document.getElementById('login-screen').style.display = 'block';
-  showStep('step-global');
+  showStep('step-resto');
 }
 
-// ── RENDER APP ────────────────────────────────────────────────────────────────
-function renderApp() {
-  var isAdmin = curUser.role==='franchise'||curUser.role==='rh';
-  var tabs = [{id:'incidents',label:'⚠️ Incidents'}];
-  if (isAdmin||curUser.role==='directeur') {
-    tabs.push({id:'equipe',label:'👥 Équipe'});
-    tabs.push({id:'lettres',label:'📄 Courriers'});
-  }
-  if (isAdmin) tabs.push({id:'settings',label:'⚙️ Paramètres'});
+// ── NAVIGATION ────────────────────────────────────────────────────────────────
+function goPage(id, btn) {
+  document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active');});
+  document.querySelectorAll('nav button').forEach(function(b){b.classList.remove('active');});
+  document.getElementById('page-'+id).classList.add('active');
+  if (btn) btn.classList.add('active');
+  if (id==='rapports'){fillRptPersons();genReport();}
+  if (id==='equipe') renderEquipe();
+  if (id==='validations') renderLetters();
+  if (id==='parametres'){renderPinSettings();renderNamesSettings();loadMailSettings();renderMailRcps();renderCCRcps();}
+}
+function setEqTab(btn,r){eqTab=r;document.querySelectorAll('#eq-tabs .rtab').forEach(function(b){b.classList.remove('on');});btn.classList.add('on');renderEquipe();}
+function setRptTab(btn,r){rptTab=r;document.querySelectorAll('#rpt-tabs .rtab').forEach(function(b){b.classList.remove('on');});btn.classList.add('on');fillRptPersons();genReport();}
+function setEmpFilter(btn,f){empFilter=f;document.querySelectorAll('#page-equipe .rtab').forEach(function(b){b.classList.remove('on');});btn.classList.add('on');renderEquipe();}
 
-  var tabsHtml = '<div class="tabs">'+tabs.map(function(t){
-    return '<button class="tab'+(t.id===currentTab?' active':'')+'" onclick="switchTab(\''+t.id+'\')">'+t.label+'</button>';
-  }).join('')+'</div>';
-
-  document.getElementById('app-body').innerHTML = tabsHtml+'<div id="tab-content"></div>';
-  renderTab();
+// ── FORM INCIDENT ─────────────────────────────────────────────────────────────
+function initForm(){
+  var now=new Date();now.setMinutes(now.getMinutes()-now.getTimezoneOffset());
+  document.getElementById('inc-dt').value=now.toISOString().slice(0,16);
+  var grid=document.getElementById('prob-grid');
+  grid.innerHTML='';
+  selProbs=new Set();selSev=null;selSanction=null;extraData={};
+  PROBS.forEach(function(p){
+    var wrap=document.createElement('div');wrap.className='prob-item';
+    var div=document.createElement('div');div.className='prob-check';div.dataset.id=p.id;
+    div.innerHTML='<div class="chk">✓</div><span style="font-size:1.05rem;">'+p.icon+'</span><span style="font-size:.83rem;">'+p.label+'</span>';
+    div.onclick=function(){toggleProb(div,p);}
+    wrap.appendChild(div);
+    if(p.extra){
+      var ex=document.createElement('div');ex.className='prob-extra';ex.id='ex-'+p.id;
+      if(p.extra.type==='retard'){
+        // 3 champs : heure prévue, heure arrivée, calcul auto
+        ex.innerHTML='<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:4px;">'
+          +'<div><label class="flabel">Heure prévue</label><input type="time" class="fi" id="ex-'+p.id+'-prev" oninput="calcRetard(\''+p.id+'\')"></div>'
+          +'<div><label class="flabel">Heure d\'arrivée</label><input type="time" class="fi" id="ex-'+p.id+'-arr" oninput="calcRetard(\''+p.id+'\')"></div>'
+          +'</div><div id="ex-'+p.id+'-result" style="font-size:.82rem;color:var(--orange);font-weight:700;min-height:18px;"></div>';
+      } else if(p.extra.type==='multi_date'){
+        // Plusieurs dates (jours d'absence)
+        ex.innerHTML='<label class="flabel">Jours d\'absence</label>'
+          +'<div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;" id="ex-'+p.id+'-tags"></div>'
+          +'<div style="display:flex;gap:6px;margin-top:6px;">'
+          +'<input type="date" class="fi" id="ex-'+p.id+'-input" style="flex:1;">'
+          +'<button onclick="addAbsenceDay(\''+p.id+'\')" style="background:var(--red);border:none;color:#fff;padding:0 12px;border-radius:var(--r);cursor:pointer;font-size:1.1rem;">+</button>'
+          +'</div>';
+      } else if(p.extra.type==='date_range'){
+        // De telle date à telle date
+        ex.innerHTML='<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">'
+          +'<div><label class="flabel">Du</label><input type="date" class="fi" id="ex-'+p.id+'-from" oninput="updateDateRange(\''+p.id+'\')"></div>'
+          +'<div><label class="flabel">Au</label><input type="date" class="fi" id="ex-'+p.id+'-to" oninput="updateDateRange(\''+p.id+'\')"></div>'
+          +'</div><div id="ex-'+p.id+'-result" style="font-size:.82rem;color:var(--orange);font-weight:700;margin-top:4px;min-height:18px;"></div>';
+      } else {
+        ex.innerHTML='<label class="flabel">'+p.extra.label+'</label><input type="'+(p.extra.type==='time'?'time':'date')+'" class="fi" data-pid="'+p.id+'" oninput="extraData[\''+p.id+'\']=this.value;">';
+      }
+      wrap.appendChild(ex);
+    }
+    grid.appendChild(wrap);
+  });
+  fillFilters();
 }
 
-function switchTab(id) { currentTab=id; renderApp(); }
-
-function renderTab() {
-  var el = document.getElementById('tab-content');
-  if (!el) return;
-  if (currentTab==='incidents') el.innerHTML = renderIncidents();
-  else if (currentTab==='equipe') el.innerHTML = renderEquipe();
-  else if (currentTab==='lettres') el.innerHTML = renderLettres();
-  else if (currentTab==='settings') { el.innerHTML=''; renderSettingsModal(); openModal('modal-settings'); }
+function toggleProb(div,p){
+  if(selProbs.has(p.id)){selProbs.delete(p.id);div.classList.remove('on');if(p.extra){var ex=document.getElementById('ex-'+p.id);if(ex)ex.classList.remove('show');delete extraData[p.id];}}
+  else{selProbs.add(p.id);div.classList.add('on');if(p.extra){var ex=document.getElementById('ex-'+p.id);if(ex)ex.classList.add('show');}}
 }
 
-// ── INCIDENTS ─────────────────────────────────────────────────────────────────
-var incFilter = 'all';
-var selProbs = new Set();
-var selectedSev = null;
-var extraData = {};
+function setSanction(btn){
+  document.querySelectorAll('.sev-btn[data-sanc]').forEach(function(b){b.style.background='';b.style.fontWeight='';});
+  btn.style.background=btn.style.color+'33';btn.style.fontWeight='700';
+  selSanction=btn.dataset.sanc;
+  selSev={verbal:'2',ecrit:'2',avert:'3',mise:'4'}[selSanction]||'2';
+}
 
-function renderIncidents() {
-  var canAdd = curUser.role!=='equipier';
-  var incs = S.incidents.slice();
-  if (curUser.restoId) incs = incs.filter(function(i){return i.restoId===curUser.restoId;});
-  if (incFilter!=='all') incs = incs.filter(function(i){return i.severity===incFilter;});
+function resetForm(){
+  selProbs=new Set();selSev=null;selSanction=null;extraData={};
+  document.querySelectorAll('.prob-check').forEach(function(d){d.classList.remove('on');});
+  document.querySelectorAll('.prob-extra').forEach(function(d){d.classList.remove('show');});
+  document.querySelectorAll('.sev-btn[data-sanc]').forEach(function(b){b.style.background='';});
+  // Reset champs spéciaux
+  ['retard-prev','retard-arr','retard-result'].forEach(function(s){var el=document.getElementById('ex-'+s);if(el)el.value!==undefined?el.value='':el.textContent='';});
+  var tags=document.getElementById('ex-absence-tags');if(tags)tags.innerHTML='';
+  var ainp=document.getElementById('ex-absence-input');if(ainp)ainp.value='';
+  ['arret_maladie-from','arret_maladie-to','arret_maladie-result'].forEach(function(s){var el=document.getElementById('ex-'+s);if(el)el.value!==undefined?el.value='':el.textContent='';});
+  document.getElementById('inc-note').value='';clearEmpSel();
+  var now=new Date();now.setMinutes(now.getMinutes()-now.getTimezoneOffset());
+  document.getElementById('inc-dt').value=now.toISOString().slice(0,16);
+}
 
-  var h = '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">';
-  h += '<div style="font-size:.9rem;color:#888;">'+incs.length+' incident'+(incs.length>1?'s':'')+'</div>';
-  if (canAdd) h += '<button class="btn btn-red" onclick="openIncModal()">+ Signaler</button>';
-  h += '</div>';
+function fillFilters(){
+  var fw=document.getElementById('f-who');fw.innerHTML='<option value="">Tous</option>';
+  var r=curUser.role;var emps;
+  if(r==='franchise') emps=DB.employees.filter(function(e){return e.role==='equipier'||e.role==='leader'||e.role==='manager';});
+  else emps=DB.employees.filter(function(e){return (e.role==='equipier'||e.role==='leader'||e.role==='manager')&&e.restoId===curUser.restoId;});
+  emps.forEach(function(e){var o=document.createElement('option');o.value=e.id;var rLbl=r==='franchise'&&RESTOS[e.restoId]?' ['+RESTOS[e.restoId].label+']':'';o.textContent=e.name+rLbl;fw.appendChild(o);});
+  var ft=document.getElementById('f-type');ft.innerHTML='<option value="">Tous types</option>';
+  PROBS.forEach(function(p){var o=document.createElement('option');o.value=p.id;o.textContent=p.icon+' '+p.label;ft.appendChild(o);});
+}
 
-  h += '<div class="filter-bar">';
-  h += '<div class="chip'+(incFilter==='all'?' active':'')+'" onclick="setIncFilter(\'all\')">Tous</div>';
-  h += '<div class="chip'+(incFilter==='minor'?' active':'')+'" onclick="setIncFilter(\'minor\')">🟡 Mineurs</div>';
-  h += '<div class="chip'+(incFilter==='major'?' active':'')+'" onclick="setIncFilter(\'major\')">🔴 Majeurs</div>';
-  h += '<div class="chip'+(incFilter==='serious'?' active':'')+'" onclick="setIncFilter(\'serious\')">🟣 Graves</div>';
-  h += '</div>';
+async function submitInc(){
+  var empId=document.getElementById('sel-emp').value;
+  var dt=document.getElementById('inc-dt').value;
+  if(!empId){toast("Choisissez un équipier",'error');return;}
+  if(selProbs.size===0){toast("Sélectionnez un motif",'error');return;}
+  if(!selSanction){toast("Choisissez un type de sanction",'error');return;}
+  selSev={verbal:'2',ecrit:'2',avert:'3',mise:'4'}[selSanction]||'2';
+  var emp=DB.employees.find(function(e){return e.id===empId;});
+  var reporterName=pinProf?pinProf.title:curUser.name;
+  try {
+    var incData = {
+      emp_id:empId, resto_id:emp?emp.restoId:curUser.restoId,
+      reporter_id:curUser.id, reporter_name:reporterName,
+      inc_datetime:dt?new Date(dt).toISOString():new Date().toISOString(),
+      problems:Array.from(selProbs), extra:Object.assign({},extraData),
+      severity:selSev, sanction_type:selSanction,
+      note:document.getElementById('inc-note').value.trim(),
+      created_at:new Date().toISOString()
+    };
+    var savedInc = await sb.insert('bks_incidents', incData);
+    if (savedInc) {
+      var inc = Object.assign({},incData,{id:savedInc.id,empId:empId,datetime:incData.inc_datetime,extraData:extraData,sanctionType:selSanction});
+      DB.incidents.unshift(inc);
+      var lid = await createLetterNew(inc);
+      toast('Signalement enregistré ✔','success');
+      resetForm();renderHistory();updateVBadge();
+      if(emp&&emp.email&&lid) setTimeout(function(){sendLetterEmail(lid);},700);
+    }
+  } catch(e) { toast('Erreur sauvegarde','error'); console.error(e); }
+}
 
-  if (!incs.length) return h+'<div style="text-align:center;padding:40px;color:#555;">Aucun incident 🎉</div>';
-
-  h += incs.map(function(i) {
-    var emp = S.employees.find(function(e){return e.id===i.empId;});
-    var empName = emp ? emp.name : 'Équipier inconnu';
-    var probs = (i.problems||[]).map(function(pid){
-      var p = PROBLEMS.find(function(x){return x.id===pid;});
-      return p ? '<span class="inc-tag">'+p.icon+' '+p.label+'</span>' : '';
-    }).join('');
-    var badge = '<span class="badge badge-'+(i.severity==='minor'?'orange':i.severity==='major'?'red':'purple')+'">'+(SEV_LABELS[i.severity]||i.severity)+'</span>';
-    return '<div class="inc-card '+(i.severity||'minor')+'">'
-      +'<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;">'
-      +'<div style="font-weight:700;font-size:.95rem;">'+empName+'</div>'+badge+'</div>'
-      +'<div class="inc-tags">'+probs+'</div>'
-      +(i.note?'<div style="font-size:.8rem;color:#aaa;font-style:italic;">'+i.note+'</div>':'')
-      +'<div style="font-size:.75rem;color:#666;margin-top:6px;">'+fmtDate(i.createdAt)+(i.restoId&&RESTOS[i.restoId]?' · '+RESTOS[i.restoId].label:'')+'</div>'
+// ── HISTORIQUE ────────────────────────────────────────────────────────────────
+function renderHistory(){
+  var list=document.getElementById('inc-list');if(!list)return;
+  var incs=DB.incidents.slice().sort(function(a,b){return new Date(b.datetime||b.createdAt)-new Date(a.datetime||a.createdAt);});
+  var r=curUser.role;
+  if(r==='manager'){var ids=DB.employees.filter(function(e){return ( e.role==='equipier'||e.role==='leader')e.role==='equipier'&&e.restoId===curUser.restoId;}).mape.role==='equipier'&&e.restoId===curUser.restoId;}).mape.restoId===curUser.restoId;}).map(function(e){return e.id;});incs=incs.filter(function(i){return ids.indexOf(i.empId)>=0;});}
+  else if(r==='directeur'){var ids=DB.employees.filter(function(e){return e.restoId===curUser.restoId;}).map(function(e){return e.id;});incs=incs.filter(function(i){return ids.indexOf(i.empId)>=0;});}
+  var fw=document.getElementById('f-who').value;
+  var ft=document.getElementById('f-type').value;
+  var fs=document.getElementById('f-sev').value;
+  var fd=document.getElementById('f-date').value;
+  if(fw)incs=incs.filter(function(i){return i.empId===fw;});
+  if(ft)incs=incs.filter(function(i){return i.problems.indexOf(ft)>=0;});
+  if(fs)incs=incs.filter(function(i){return i.severity===fs;});
+  if(fd)incs=incs.filter(function(i){return i.datetime&&i.datetime.startsWith(fd);});
+  if(!incs.length){list.innerHTML='<div class="empty"><div class="ei">📋</div><p>Aucun incident</p></div>';return;}
+  var sLbls=['','🟢 Mineur','🟡 Modéré','🟠 Sérieux','🔴 Grave'];
+  list.innerHTML=incs.slice(0,80).map(function(i){
+    var emp=DB.employees.find(function(e){return e.id===i.empId;});
+    var empName=emp?emp.name:'Inconnu';
+    var restoLbl=emp&&RESTOS[emp.restoId]&&r==='franchise'?' ['+RESTOS[emp.restoId].label+']':'';
+    var tags=(i.problems||[]).map(function(pid){var p=PROBS.find(function(x){return x.id===pid;});if(!p)return'';var xtra=i.extraData&&i.extraData[pid]?Array.isArray(i.extraData[pid])?' ('+i.extraData[pid].length+' jour'+(i.extraData[pid].length>1?'s':'')+')':' ('+i.extraData[pid]+')':'';return'<span class="tag">'+p.icon+' '+p.label+xtra+'</span>';}).join('');
+    var dt=i.datetime?new Date(i.datetime).toLocaleString('fr-FR',{weekday:'short',day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}):'—';
+    var sanc=SANCTIONS[i.sanctionType];
+    var sancTag=sanc?'<span style="border:1px solid '+sanc.color+';color:'+sanc.color+';padding:1px 7px;border-radius:10px;font-size:.7rem;margin-left:5px;">'+sanc.icon+' '+sanc.label+'</span>':'';
+    var sevLbl=sLbls[parseInt(i.severity)]||'';
+    return '<div class="inc-item" data-s="'+i.severity+'">'
+      +'<div class="inc-head"><span class="inc-who">👤 '+empName+restoLbl+sancTag+'</span><span class="inc-meta">'+dt+' · '+(i.reporterName||'?')+' · '+sevLbl+'</span></div>'
+      +'<div class="inc-tags">'+tags+'</div>'
+      +(i.note?'<div class="inc-note">💬 '+i.note+'</div>':'')
       +'</div>';
   }).join('');
-
-  return h;
 }
 
-function setIncFilter(f) { incFilter=f; document.getElementById('tab-content').innerHTML=renderIncidents(); }
-
-function openIncModal() {
-  selProbs = new Set(); selectedSev = null; extraData = {};
-  document.getElementById('inc-search').value='';
-  document.getElementById('inc-emp-id').value='';
-  document.getElementById('inc-drop').style.display='none';
-  document.getElementById('inc-note').value='';
-  document.getElementById('extra-fields').innerHTML='';
-  var now = new Date(); now.setMinutes(now.getMinutes()-now.getTimezoneOffset());
-  document.getElementById('inc-dt').value = now.toISOString().slice(0,16);
-  document.querySelectorAll('.sev-btn').forEach(function(b){b.className='sev-btn';});
-  document.getElementById('prob-grid').innerHTML = PROBLEMS.map(function(p){
-    return '<div class="prob-item" id="prob-'+p.id+'" onclick="toggleProb(\''+p.id+'\')">'
-      +'<span class="prob-icon">'+p.icon+'</span><span class="prob-label">'+p.label+'</span></div>';
-  }).join('');
-  openModal('modal-inc');
+// ── RAPPORTS ──────────────────────────────────────────────────────────────────
+function fillRptPersons(){
+  var sel=document.getElementById('rpt-person');sel.innerHTML="<option value='all'>Toute l'équipe</option>";
+  var r=curUser.role;var targets;
+  if(r==='franchise'){var rf=rptTab==='all'?null:rptTab;targets=DB.employees.filter(function(e){return e.role!=='franchise'&&!e.archived&&(rf?e.restoId===rf:true);});}
+  else if(r==='directeur'){targets=DB.employees.filter(function(e){return e.restoId===curUser.restoId&&e.role!=='directeur'&&!e.archived;});}
+  else{targets=DB.employees.filter(function(e){return e.restoId===curUser.restoId&&e.role==='equipier'&&!e.archived;});}
+  targets.forEach(function(e){var o=document.createElement('option');o.value=e.id;var rLbl=r==='franchise'&&RESTOS[e.restoId]?' ['+RESTOS[e.restoId].label+']':'';o.textContent=e.name+rLbl;sel.appendChild(o);});
 }
-
-function toggleProb(id) {
-  if (selProbs.has(id)) { selProbs.delete(id); document.getElementById('prob-'+id).classList.remove('sel'); }
-  else { selProbs.add(id); document.getElementById('prob-'+id).classList.add('sel'); }
-  var ef = document.getElementById('extra-fields'); ef.innerHTML='';
-  selProbs.forEach(function(pid){
-    var prob = PROBLEMS.find(function(x){return x.id===pid;});
-    if (prob&&prob.extra) {
-      ef.innerHTML += '<div class="fg"><label class="fl">'+prob.extra.label+'</label>'
-        +'<input class="fi" type="'+(prob.extra.type==='time'?'time':'date')+'" id="extra-'+pid+'" onchange="extraData[\''+pid+'\']=this.value"></div>';
-    }
+function filterIncsByPeriod(period){
+  var now=new Date();
+  return DB.incidents.filter(function(i){
+    var d=new Date(i.createdAt);
+    if(period==='today')return d>=new Date(now.toDateString());
+    if(period==='week'){var s=new Date(now);s.setDate(s.getDate()-7);return d>=s;}
+    if(period==='month'){var s=new Date(now);s.setMonth(s.getMonth()-1);return d>=s;}
+    return true;
   });
 }
-
-function selSev(s, btn) {
-  selectedSev = s;
-  document.querySelectorAll('.sev-btn').forEach(function(b){b.className='sev-btn';});
-  btn.className = 'sev-btn sel'+(s!=='minor'?'-'+s:'');
+function buildRestoBlock(restoId,incs,targets){
+  var resto=RESTOS[restoId];
+  var rIncs=incs.filter(function(i){var e=DB.employees.find(function(x){return x.id===i.empId;});return e&&e.restoId===restoId;});
+  var rTargets=targets.filter(function(e){return e.restoId===restoId;});
+  var total=rIncs.length;
+  var grave=rIncs.filter(function(i){return i.severity==='4';}).length;
+  var ser=rIncs.filter(function(i){return i.severity==='3';}).length;
+  var h='<div class="rsec"><div class="rsec-hdr rsec-'+restoId+'">🍔 '+resto.label+' <span style="font-size:.8rem;font-weight:400;opacity:.7;">— '+total+' incident'+(total!==1?'s':'')+'</span></div>';
+  h+='<div class="stats-grid"><div class="stat-card"><div class="stat-n">'+total+'</div><div class="stat-l">Incidents</div></div><div class="stat-card"><div class="stat-n" style="color:#4CAF50;">'+rTargets.length+'</div><div class="stat-l">Membres</div></div><div class="stat-card"><div class="stat-n" style="color:var(--orange);">'+ser+'</div><div class="stat-l">Sérieux</div></div><div class="stat-card"><div class="stat-n" style="color:var(--red);">'+grave+'</div><div class="stat-l">Graves</div></div></div>';
+  if(rTargets.length>0){
+    h+='<div class="card" style="padding:0;overflow:hidden;margin-bottom:10px;"><table class="tbl"><thead><tr><th>Nom</th><th>Rôle</th><th>Nb</th><th>Type fréquent</th><th>Max</th><th>Score</th></tr></thead><tbody>';
+    rTargets.forEach(function(emp){
+      var mInc=rIncs.filter(function(i){return i.empId===emp.id;});var t=mInc.length;
+      var maxSev=mInc.reduce(function(m,i){return Math.max(m,parseInt(i.severity)||0);},0);
+      var freq={};mInc.forEach(function(i){i.problems.forEach(function(p){freq[p]=(freq[p]||0)+1;});});
+      var top='—';if(Object.keys(freq).length){var tid=Object.entries(freq).sort(function(a,b){return b[1]-a[1];})[0][0];var pp=PROBS.find(function(x){return x.id===tid;});if(pp)top=pp.icon+' '+pp.label;}
+      var sv=Math.min(100,t*8+(maxSev>2?(maxSev-2)*10:0));var sc=sv<20?'sg':sv<50?'so':sv<80?'sb':'sc';
+      var sevT=['','🟢','🟡','🟠','🔴'][maxSev]||'—';
+      h+='<tr><td><strong>'+emp.name+'</strong></td><td><span class="role-pill rp-'+emp.role[0]+'">'+cap(emp.role)+'</span></td><td style="font-weight:600;color:'+(t>5?'var(--red)':t>2?'var(--orange)':'#4CAF50')+'">'+t+'</td><td style="font-size:.8rem;">'+top+'</td><td>'+sevT+'</td><td><div class="score-wrap '+sc+'"><div class="score-bar"><div class="score-fill" style="width:'+sv+'%"></div></div><span style="font-size:.75rem;color:#888;width:28px;text-align:right;">'+sv+'</span></div></td></tr>';
+    });
+    h+='</tbody></table></div>';
+  }
+  if(total>0){h+='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(195px,1fr));gap:8px;margin-bottom:8px;">';PROBS.forEach(function(p){var cnt=rIncs.filter(function(i){return i.problems.indexOf(p.id)>=0;}).length;if(!cnt)return;var pct=Math.round(cnt/total*100);h+='<div style="background:#1A1A1A;border-radius:8px;padding:10px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><span style="font-size:.8rem;">'+p.icon+' '+p.label+'</span><strong style="color:var(--orange);">'+cnt+'</strong></div><div class="score-bar"><div class="score-fill" style="width:'+pct+'%;background:var(--orange);"></div></div></div>';});h+='</div>';}
+  h+='</div>';return h;
 }
-
-async function submitInc() {
-  var empId = document.getElementById('inc-emp-id').value;
-  var dt = document.getElementById('inc-dt').value;
-  if (!empId) { showToast('Choisissez un équipier','error'); return; }
-  if (selProbs.size===0) { showToast("Sélectionnez un type d'incident",'error'); return; }
-  if (!selectedSev) { showToast('Choisissez une gravité','error'); return; }
-  var emp = S.employees.find(function(e){return e.id===empId;});
-  var inc = {
-    emp_id:empId, resto_id:emp?emp.resto_id:(curUser.restoId||null),
-    severity:selectedSev, problems:Array.from(selProbs),
-    extra:extraData, note:document.getElementById('inc-note').value.trim(),
-    created_by:curUser.id, created_at:dt?new Date(dt).toISOString():new Date().toISOString()
-  };
-  try {
-    await sb.insert('bks_incidents',inc);
-    await loadAll();
-    closeModal('modal-inc');
-    showToast('✅ Incident enregistré','ok');
-    currentTab='incidents'; renderApp();
-  } catch(e) { showToast('⚠️ Erreur','error'); console.error(e); }
+function genReport(){
+  var period=document.getElementById('rpt-period').value;var personId=document.getElementById('rpt-person').value;
+  var pl={today:"Aujourd'hui",week:'7 derniers jours',month:'30 derniers jours',all:'Tout'};
+  var r=curUser.role;var incs=filterIncsByPeriod(period);var targets;
+  if(personId!=='all'){targets=DB.employees.filter(function(e){return e.id===personId;});}
+  else if(r==='franchise'){var rf=rptTab==='all'?null:rptTab;targets=DB.employees.filter(function(e){return e.role!=='franchise'&&!e.archived&&(rf?e.restoId===rf:true);});}
+  else if(r==='directeur'){targets=DB.employees.filter(function(e){return e.restoId===curUser.restoId&&e.role!=='directeur'&&!e.archived;});var ids=targets.map(function(e){return e.id;});incs=incs.filter(function(i){return ids.indexOf(i.empId)>=0;});}
+  else{targets=DB.employees.filter(function(e){return e.restoId===curUser.restoId&&( e.role==='equipier'||e.role==='leader')&&!e.archived;});var ids=targets.map(function(e){return e.id;});incs=incs.filter(function(i){return ids.indexOf(i.empId)>=0;});}
+  var out=document.getElementById('rpt-out');var now=new Date();var total=incs.length;var grave=incs.filter(function(i){return i.severity==='4';}).length;var ser=incs.filter(function(i){return i.severity==='3';}).length;
+  var h='<div style="text-align:center;padding:18px;background:linear-gradient(135deg,#1A1A1A,#2C2C2C);border-radius:var(--r);margin-bottom:16px;border:1px solid #333;"><div style="font-family:\'Barlow Condensed\',sans-serif;font-weight:900;font-size:1.5rem;color:var(--yellow);text-transform:uppercase;letter-spacing:3px;">📊 Rapport — '+pl[period]+'</div><p style="color:#888;margin-top:5px;font-size:.82rem;">Généré le '+now.toLocaleString('fr-FR')+'</p>'+(r==='franchise'&&rptTab!=='all'?'<p style="color:var(--orange);font-size:.85rem;margin-top:3px;">'+RESTOS[rptTab].label+'</p>':'')+'</div>';
+  h+='<div class="stats-grid"><div class="stat-card"><div class="stat-n">'+total+'</div><div class="stat-l">Total incidents</div></div><div class="stat-card"><div class="stat-n" style="color:#4CAF50;">'+targets.length+'</div><div class="stat-l">Membres</div></div><div class="stat-card"><div class="stat-n" style="color:var(--orange);">'+ser+'</div><div class="stat-l">Sérieux</div></div><div class="stat-card"><div class="stat-n" style="color:var(--red);">'+grave+'</div><div class="stat-l">Graves</div></div></div>';
+  var isMulti=r==='franchise'&&rptTab==='all'&&personId==='all';
+  if(isMulti){Object.keys(RESTOS).forEach(function(rid){h+=buildRestoBlock(rid,incs,targets);});}
+  else{
+    h+='<div class="card" style="padding:0;overflow:hidden;"><table class="tbl"><thead><tr><th>Nom</th><th>Rôle</th><th>Incidents</th><th>Type fréquent</th><th>Max</th><th>Score</th></tr></thead><tbody>';
+    targets.forEach(function(emp){
+      var mInc=incs.filter(function(i){return i.empId===emp.id;});var t=mInc.length;
+      var maxSev=mInc.reduce(function(m,i){return Math.max(m,parseInt(i.severity)||0);},0);
+      var freq={};mInc.forEach(function(i){i.problems.forEach(function(p){freq[p]=(freq[p]||0)+1;});});
+      var top='—';if(Object.keys(freq).length){var tid=Object.entries(freq).sort(function(a,b){return b[1]-a[1];})[0][0];var pp=PROBS.find(function(x){return x.id===tid;});if(pp)top=pp.icon+' '+pp.label;}
+      var sv=Math.min(100,t*8+(maxSev>2?(maxSev-2)*10:0));var sc=sv<20?'sg':sv<50?'so':sv<80?'sb':'sc';
+      var sevT=['','🟢','🟡','🟠','🔴'][maxSev]||'—';var rLbl=r==='franchise'&&RESTOS[emp.restoId]?' ['+RESTOS[emp.restoId].label+']':'';
+      h+='<tr><td><strong>'+emp.name+rLbl+'</strong></td><td><span class="role-pill rp-'+emp.role[0]+'">'+cap(emp.role)+'</span></td><td style="font-weight:600;color:'+(t>5?'var(--red)':t>2?'var(--orange)':'#4CAF50')+'">'+t+'</td><td style="font-size:.8rem;">'+top+'</td><td>'+sevT+'</td><td><div class="score-wrap '+sc+'"><div class="score-bar"><div class="score-fill" style="width:'+sv+'%"></div></div><span style="font-size:.75rem;color:#888;width:28px;text-align:right;">'+sv+'</span></div></td></tr>';
+    });
+    h+='</tbody></table></div>';
+    if(total>0){h+='<div style="font-size:.78rem;color:#888;text-transform:uppercase;letter-spacing:1px;margin:14px 0 8px;">Incidents par type</div><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(195px,1fr));gap:8px;">';PROBS.forEach(function(p){var cnt=incs.filter(function(i){return i.problems.indexOf(p.id)>=0;}).length;if(!cnt)return;var pct=Math.round(cnt/total*100);h+='<div style="background:#1A1A1A;border-radius:8px;padding:10px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;"><span style="font-size:.8rem;">'+p.icon+' '+p.label+'</span><strong style="color:var(--orange);">'+cnt+'</strong></div><div class="score-bar"><div class="score-fill" style="width:'+pct+'%;background:var(--orange);"></div></div></div>';});h+='</div>';}
+  }
+  out.innerHTML=h;
 }
 
 // ── ÉQUIPE ────────────────────────────────────────────────────────────────────
-var empFilterTab='actif'; var empRestoFilter='all';
-
-function renderEquipe() {
-  var isAdmin = curUser.role==='franchise'||curUser.role==='rh';
-  var emps = S.employees.filter(function(e){return e.role==='equipier';});
-  if (!isAdmin&&curUser.restoId) emps=emps.filter(function(e){return e.resto_id===curUser.restoId;});
-  if (isAdmin&&empRestoFilter!=='all') emps=emps.filter(function(e){return e.resto_id===empRestoFilter;});
-  if (empFilterTab==='actif') emps=emps.filter(function(e){return !e.archived;});
-  else emps=emps.filter(function(e){return e.archived;});
-
-  var h='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">'
-    +'<div style="font-size:.9rem;color:#888;">'+emps.length+' équipier'+(emps.length>1?'s':'')+'</div>'
-    +'<button class="btn btn-green" onclick="openAddEmpModal()">+ Ajouter</button></div>';
-
-  if (isAdmin) {
-    h+='<div class="filter-bar"><div class="chip'+(empRestoFilter==='all'?' active':'')+'" onclick="setEmpResto(\'all\')">Tous</div>';
-    Object.values(RESTOS).forEach(function(r){h+='<div class="chip'+(empRestoFilter===r.id?' active':'')+'" onclick="setEmpResto(\''+r.id+'\')">'+r.label+'</div>';});
-    h+='</div>';
-  }
-
-  h+='<div class="filter-bar"><div class="chip'+(empFilterTab==='actif'?' active':'')+'" onclick="setEmpFilter(\'actif\')">Actifs</div>'
-    +'<div class="chip'+(empFilterTab==='archive'?' active':'')+'" onclick="setEmpFilter(\'archive\')">Archivés</div></div>';
-
-  if (!emps.length) return h+'<div style="text-align:center;padding:40px;color:#555;">Aucun équipier</div>';
-
-  h+=emps.map(function(e){
-    var nbInc=S.incidents.filter(function(i){return i.empId===e.id;}).length;
-    return '<div class="emp-card"><div class="emp-avatar">'+initials(e.name)+'</div>'
-      +'<div style="flex:1;"><div style="font-weight:700;font-size:.95rem;">'+e.name+'</div>'
-      +'<div style="font-size:.75rem;color:#888;">'+(RESTOS[e.resto_id]?RESTOS[e.resto_id].label:e.resto_id)+' · '+nbInc+' incident'+(nbInc>1?'s':'')+'</div>'
-      +(e.email?'<div style="font-size:.72rem;color:#666;">'+e.email+'</div>':'')+'</div>'
-      +'<button class="btn btn-gray" onclick="openEditEmpModal(\''+e.id+'\')">✏️</button></div>';
-  }).join('');
-
-  return h;
+function renderEquipe(){
+  var list=document.getElementById('eq-list');if(!list)return;
+  var r=curUser.role;var isGlobal=(r==='franchise');
+  var restosToShow=isGlobal?eqTab==='all'?Object.keys(RESTOS):[eqTab]:[curUser.restoId];
+  var canManage=r==='franchise'||r==='directeur';var h='';
+  restosToShow.forEach(function(restoId){
+    if(!restoId)return;
+    var resto=RESTOS[restoId]||{label:restoId};
+    var emps=DB.employees.filter(function(e){return e.restoId===restoId&&(r==='manager'?e.role==='equipier':true);});
+    if(empFilter==='actif')emps=emps.filter(function(e){return !e.archived;});
+    else if(empFilter==='archive')emps=emps.filter(function(e){return !!e.archived;});
+    if(restosToShow.length>1){h+='<div class="rsec-hdr rsec-'+restoId+'" style="margin-bottom:12px;">🍔 '+resto.label+' <span style="font-size:.8rem;font-weight:400;opacity:.7;">— '+emps.length+' membre'+(emps.length!==1?'s':'')+'</span></div>';}
+    else{h+='<div class="sec-title">🍔 '+resto.label+'</div>';}
+    if(!emps.length){h+='<p style="color:#555;font-size:.83rem;padding:8px 0 18px;">Aucun membre dans cette catégorie.</p>';return;}
+    ['directeur','manager','leader','equipier'].forEach(function(ro){
+      var grp=emps.filter(function(e){return e.role===ro;});if(!grp.length)return;
+      var ico=ro==='directeur'?'👑':ro==='manager'?'⭐':ro==='leader'?'🎖️':'👤';
+      h+='<div style="font-size:.76rem;color:#888;text-transform:uppercase;letter-spacing:1px;margin:10px 0 5px;">'+ico+' '+cap(ro)+'s</div>';
+      grp.forEach(function(e){
+        var init=e.name.split(' ').map(function(w){return w[0]||'';}).join('').toUpperCase().slice(0,2);
+        var myInc=DB.incidents.filter(function(i){return i.empId===e.id;}).length;
+        var arch=!!e.archived;
+        h+='<div class="emp-card" style="'+(arch?'opacity:.6;border-color:#553300;':'')+'">'
+          +'<div style="display:flex;align-items:center;gap:10px;flex:1;min-width:0;">'
+          +'<div class="emp-av av-'+ro[0]+'" style="'+(arch?'filter:grayscale(1);':'')+'">'+init+'</div>'
+          +'<div style="min-width:0;"><div style="font-weight:600;font-size:.9rem;">'+e.name+(arch?' <span style="font-size:.68rem;color:#888;background:#2A1A00;padding:1px 6px;border-radius:9px;">📁</span>':'')+'</div>'
+          +'<div style="font-size:.73rem;color:#888;">'+cap(e.role)+' · '+myInc+' incident'+(myInc!==1?'s':'')+(e.email?' · '+e.email:'')+'</div></div></div>'
+          +'<div style="display:flex;align-items:center;gap:5px;flex-shrink:0;flex-wrap:wrap;justify-content:flex-end;">'
+          +'<span class="role-pill rp-'+ro[0]+'">'+cap(ro)+'</span>'
+          +(canManage&&!arch?'<button class="btn btn-gray btn-sm" onclick="openEdit(\''+e.id+'\')">✏️</button>':'')
+          +(canManage&&!arch&&ro==='equipier'?'<button class="btn-danger" onclick="openExit(\''+e.id+'\')">📤</button>':'')
+          +(canManage&&arch?'<button class="btn btn-gray btn-sm" onclick="openEdit(\''+e.id+'\')">📅</button>':'')
+          +(canManage&&arch?'<button class="btn-danger" onclick="delEmp(\''+e.id+'\')">🗑️</button>':'')
+          +'</div></div>';
+      });
+    });
+    if(restosToShow.length>1)h+='<div style="height:10px;"></div>';
+  });
+  list.innerHTML=h||'<div class="empty"><div class="ei">👥</div><p>Aucun membre</p></div>';
 }
 
-function setEmpFilter(f){empFilterTab=f;document.getElementById('tab-content').innerHTML=renderEquipe();}
-function setEmpResto(r){empRestoFilter=r;document.getElementById('tab-content').innerHTML=renderEquipe();}
-
-function openAddEmpModal() {
-  document.getElementById('new-name').value='';
-  document.getElementById('new-email').value='';
-  document.getElementById('new-phone').value='';
-  if (curUser.restoId) document.getElementById('new-resto').value=curUser.restoId;
-  openModal('modal-add-emp');
-}
-
-function openEditEmpModal(id) {
-  var e=S.employees.find(function(x){return x.id===id;});
-  if(!e)return;
-  document.getElementById('edit-emp-id').value=id;
-  document.getElementById('edit-emp-title').textContent='✏️ '+e.name;
-  document.getElementById('edit-name').value=e.name;
-  document.getElementById('edit-role').value=e.role||'equipier';
-  document.getElementById('edit-email').value=e.email||'';
-  document.getElementById('edit-phone').value=e.phone||'';
-  openModal('modal-edit-emp');
-}
-
-async function saveEditEmp() {
-  var id=document.getElementById('edit-emp-id').value;
-  var data={name:document.getElementById('edit-name').value.trim(),role:document.getElementById('edit-role').value,email:document.getElementById('edit-email').value.trim(),phone:document.getElementById('edit-phone').value.trim()};
-  if(!data.name){showToast('Nom requis','error');return;}
-  try{await sb.patch('bks_employees','id=eq.'+id,data);await loadAll();closeModal('modal-edit-emp');showToast('✅ Mis à jour','ok');document.getElementById('tab-content').innerHTML=renderEquipe();}
-  catch(e){showToast('⚠️ Erreur','error');}
-}
-
-async function archiveEmp() {
-  var id=document.getElementById('edit-emp-id').value;
-  if(!confirm('Archiver cet équipier ?'))return;
-  try{await sb.patch('bks_employees','id=eq.'+id,{archived:true});await loadAll();closeModal('modal-edit-emp');showToast('📦 Archivé','ok');document.getElementById('tab-content').innerHTML=renderEquipe();}
-  catch(e){showToast('⚠️ Erreur','error');}
-}
-
-async function addEmp() {
+async function addEmp(){
+  var r=curUser.role;if(r!=='directeur'&&r!=='franchise')return;
   var name=document.getElementById('new-name').value.trim();
-  if(!name){showToast('Nom requis','error');return;}
-  var restoId=document.getElementById('new-resto').value||curUser.restoId||'bk500';
-  var id=restoId+'_'+name.toLowerCase().replace(/[^a-z0-9]/g,'_').substring(0,20)+'_'+Date.now();
-  try{
-    await sb.insert('bks_employees',{id:id,name:name,role:'equipier',resto_id:restoId,email:document.getElementById('new-email').value.trim(),phone:document.getElementById('new-phone').value.trim(),archived:false});
-    await loadAll();closeModal('modal-add-emp');document.getElementById('new-name').value='';
-    showToast('✅ Équipier ajouté','ok');document.getElementById('tab-content').innerHTML=renderEquipe();
-  }catch(e){showToast('⚠️ Erreur','error');console.error(e);}
+  var role=document.getElementById('new-role').value;
+  if(!name){toast('Entrez un nom','error');return;}
+  var restoId=r==='franchise'?(document.getElementById('new-resto').value||'bk500'):curUser.restoId;
+  var id='u'+Date.now();
+  try {
+    await sb.insert('bks_employees',{id:id,name:name,role:role,resto_id:restoId,archived:false,email:'',phone:''});
+    await loadAll();
+    document.getElementById('new-name').value='';
+    renderEquipe();fillFilters();fillRptPersons();
+    toast(name+' ajouté(e) dans '+(RESTOS[restoId]?RESTOS[restoId].label:restoId)+' ✔','success');
+  } catch(e){toast('Erreur','error');console.error(e);}
 }
+
+async function delEmp(id){
+  var e=DB.employees.find(function(x){return x.id===id;});
+  if(!e||!confirm('Supprimer définitivement '+e.name+' ?'))return;
+  try {await sb.del('bks_employees','id=eq.'+id);await loadAll();renderEquipe();toast('Membre supprimé','');}
+  catch(e2){toast('Erreur','error');}
+}
+
+function openEdit(id){
+  var e=DB.employees.find(function(x){return x.id===id;});if(!e)return;
+  document.getElementById('edit-id').value=id;
+  document.getElementById('edit-name').value=e.name;
+  document.getElementById('edit-role').value=e.role;
+  document.getElementById('edit-email').value=e.email||'';
+  var row=document.getElementById('edit-exit-date-row');
+  if(e.archived){row.style.display='block';document.getElementById('edit-exit-def').value=e.exitDateDefinitive||e.exitDate||'';}
+  else row.style.display='none';
+  document.getElementById('modal-edit').classList.add('open');
+}
+
+async function saveEdit(){
+  var id=document.getElementById('edit-id').value;
+  var e=DB.employees.find(function(x){return x.id===id;});if(!e)return;
+  var data={name:document.getElementById('edit-name').value.trim()||e.name,role:document.getElementById('edit-role').value,email:document.getElementById('edit-email').value.trim()};
+  try {await sb.patch('bks_employees','id=eq.'+id,data);await loadAll();closeModal('modal-edit');renderEquipe();fillFilters();fillRptPersons();toast(data.name+' mis à jour ✔','success');}
+  catch(e2){toast('Erreur','error');}
+}
+
+function openExit(id){
+  var now=new Date();now.setMinutes(now.getMinutes()-now.getTimezoneOffset());
+  document.getElementById('exit-id').value=id;
+  document.getElementById('exit-date').value=now.toISOString().slice(0,10);
+  document.getElementById('exit-note').value='';
+  document.getElementById('exit-motif').value='fin_contrat';
+  document.getElementById('modal-exit').classList.add('open');
+}
+
+async function confirmExit(){
+  var id=document.getElementById('exit-id').value;
+  var e=DB.employees.find(function(x){return x.id===id;});if(!e)return;
+  var data={archived:true,exit_date:document.getElementById('exit-date').value,exit_motif:document.getElementById('exit-motif').value,exit_note:document.getElementById('exit-note').value.trim()};
+  try {await sb.patch('bks_employees','id=eq.'+id,data);await loadAll();closeModal('modal-exit');empFilter='actif';renderEquipe();fillFilters();fillRptPersons();toast(e.name+' archivé(e). Historique conservé ✔','success');}
+  catch(e2){toast('Erreur','error');}
+}
+
+function closeModal(id){document.getElementById(id).classList.remove('open');}
 
 // ── LETTRES ───────────────────────────────────────────────────────────────────
-function renderLettres() {
-  var lets=S.letters.slice();
-  if(curUser.restoId)lets=lets.filter(function(l){return l.restoId===curUser.restoId;});
-  var h='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">'
-    +'<div style="font-size:.9rem;color:#888;">'+lets.length+' courrier'+(lets.length>1?'s':'')+'</div>'
-    +'<button class="btn btn-orange" onclick="openLetterModal()">+ Courrier</button></div>';
-  if(!lets.length)return h+'<div style="text-align:center;padding:40px;color:#555;">Aucun courrier</div>';
-  h+=lets.map(function(l){
-    var emp=S.employees.find(function(e){return e.id===l.empId;});
-    var empName=emp?emp.name:'Équipier inconnu';
-    var stC=l.status==='sent'?'#2A7D4F':l.status==='signed'?'#1A3A7D':'#3A2A00';
-    var stL=l.status==='sent'?'Envoyé':l.status==='signed'?'Signé':'En attente';
-    return '<div class="letter-card">'
-      +'<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;">'
-      +'<div><div style="font-weight:700;font-size:.95rem;">'+empName+'</div>'
-      +'<div style="font-size:.78rem;color:#888;">'+(LETTER_LABELS[l.type]||l.type)+'</div></div>'
-      +'<span style="padding:3px 10px;border-radius:20px;font-size:.7rem;font-weight:700;background:'+stC+'33;color:'+stC+';">'+stL+'</span></div>'
-      +(l.subject?'<div style="font-size:.82rem;color:#ccc;margin-bottom:4px;">'+l.subject+'</div>':'')
-      +'<div style="font-size:.75rem;color:#666;">'+fmtDate(l.createdAt)+'</div>'
-      +(l.status==='pending'?'<button class="btn btn-green" style="margin-top:8px;" onclick="markLetterSent(\''+l.id+'\')">📤 Marquer envoyé</button>':'')
-      +'</div>';
+async function createLetterNew(inc){
+  var emp=DB.employees.find(function(e){return e.id===inc.empId;});
+  var empName=emp?emp.name:"l'équipier";
+  var restoLabel=emp&&RESTOS[emp.restoId]?RESTOS[emp.restoId].label:'Burger King';
+  var st=SANCTIONS[inc.sanctionType]||{label:'Observation',icon:'📄'};
+  var dt=inc.datetime?new Date(inc.datetime).toLocaleDateString('fr-FR',{weekday:'long',day:'2-digit',month:'long',year:'numeric'}):new Date().toLocaleDateString('fr-FR');
+  var pList=inc.problems.map(function(pid){var p=PROBS.find(function(x){return x.id===pid;});var l=p?p.label:pid;if(inc.extraData&&inc.extraData[pid])l+=' ('+inc.extraData[pid]+')';return '• '+l;}).join('\n');
+  var body=restoLabel+'\nDate : '+new Date().toLocaleDateString('fr-FR')+'\n\nObjet : '+st.label.toUpperCase()+'\n────────────────────────────────────\n\n';
+  body+='Madame, Monsieur '+empName+',\n\n';
+  if(inc.sanctionType==='verbal'){body+="Lors d'un entretien le "+dt+", nous vous avons signalé :\n\n"+pList+"\n\nNous vous demandons de remédier à ces points rapidement.\n\n";}
+  else if(inc.sanctionType==='ecrit'){body+='Nous avons constaté le '+dt+' les points suivants :\n\n'+pList+"\n\nPar cette observation écrite, nous vous demandons de corriger ces comportements.\n\n";}
+  else if(inc.sanctionType==='avert'){body+='Nous avons constaté le '+dt+' les manquements suivants :\n\n'+pList+"\n\nCes faits constituent une violation de vos obligations. Nous vous notifions le présent AVERTISSEMENT ÉCRIT.\n\nTout nouveau manquement pourra entraîner des sanctions plus graves.\n\n";}
+  else if(inc.sanctionType==='mise'){body+='Nous avons constaté le '+dt+' les manquements graves suivants :\n\n'+pList+"\n\nPar la présente MISE EN DEMEURE, nous vous enjoignons de cesser immédiatement tout manquement, sous peine de licenciement.\n\n";}
+  if(inc.note)body+='Précisions : '+inc.note+'\n\n';
+  body+='────────────────────────────────────\nRédigé par : '+(inc.reporterName||'?')+'\n\nSignature de l\'employé(e) : ___________________________\n☐ Pris connaissance   ☐ Refuse de signer';
+  var lid='let_'+inc.id;
+  try {
+    await sb.insert('bks_letters',{id:lid,incident_id:inc.id,emp_id:inc.empId,emp_name:empName,emp_email:(emp&&emp.email)||'',sanction_type:inc.sanctionType,type:inc.sanctionType,status:'pending',sig_status:'pending',body:body,created_by:inc.reporterName||'?',created_at:new Date().toISOString()});
+    await loadAll();updateVBadge();
+  } catch(e){console.error('createLetter',e);}
+  return lid;
+}
+
+function updateVBadge(){
+  var n=(DB.letters||[]).filter(function(l){return l.sigStatus==='pending'||l.status==='pending';}).length;
+  var b=document.getElementById('vbadge');if(!b)return;
+  b.textContent=n;b.style.display=n>0?'inline-flex':'none';
+}
+
+function renderLetters(){
+  var c=document.getElementById('letters-list');if(!c)return;
+  var letters=DB.letters.slice().sort(function(a,b){return new Date(b.createdAt)-new Date(a.createdAt);});
+  var r=curUser.role;
+  if(r!=='franchise'){var ids=DB.employees.filter(function(e){return e.restoId===curUser.restoId;}).map(function(e){return e.id;});letters=letters.filter(function(l){return ids.indexOf(l.empId)>=0;});}
+  if(!letters.length){c.innerHTML='<div class="empty"><div class="ei">✉️</div><p>Aucun courrier</p></div>';return;}
+  var canVal=r==='directeur'||r==='franchise';
+  c.innerHTML=letters.map(function(l){
+    var st=SANCTIONS[l.sanctionType]||{label:l.type==='avertissement'?'Avertissement':'Observation',icon:'📄',color:'#FF8732'};
+    var ss=l.sigStatus||'pending';
+    var sigB=ss==='signed'?'<span style="background:#1A2A1A;color:#4CAF50;padding:2px 9px;border-radius:10px;font-size:.7rem;font-weight:700;">✍️ Signé le '+new Date(l.signedAt).toLocaleDateString('fr-FR')+'</span>'
+      :ss==='refused'?'<span style="background:#2A1A1A;color:#cc5555;padding:2px 9px;border-radius:10px;font-size:.7rem;font-weight:700;">❌ Refus signature</span>'
+      :'<span style="background:#2A2000;color:#F5A623;padding:2px 9px;border-radius:10px;font-size:.7rem;font-weight:700;">⏳ En attente signature</span>';
+    var sigUrl=window.location.origin+window.location.pathname+'#sign/'+l.id;
+    var editable=canVal&&ss!=='signed';
+    var h='<div class="letter-card" style="border-left:4px solid '+st.color+';">'
+      +'<div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:7px;margin-bottom:10px;">'
+      +'<div><strong style="color:var(--orange);">👤 '+l.empName+'</strong><span style="background:'+st.color+'22;border:1px solid '+st.color+';color:'+st.color+';padding:2px 9px;border-radius:10px;font-size:.7rem;font-weight:700;margin-left:8px;">'+st.icon+' '+st.label+'</span></div>'
+      +'<div style="font-size:.74rem;color:#888;">'+l.createdBy+' · '+new Date(l.createdAt).toLocaleString('fr-FR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'})+'</div></div>'
+      +'<div style="margin-bottom:10px;">'+sigB+'</div>';
+    if(editable)h+='<label class="flabel">📧 Email employé</label><input type="email" id="ml-'+l.id+'" class="fi" value="'+(l.empEmail||'')+'" placeholder="email@exemple.com" style="max-width:300px;margin-bottom:10px;">';
+    h+='<label class="flabel">📄 Courrier</label><textarea id="lt-'+l.id+'" class="fi" style="min-height:160px;font-size:.84rem;line-height:1.6;"'+(editable?'':' readonly')+'>'+l.text+'</textarea>';
+    h+='<div style="background:#111;border-radius:8px;border:1px solid #2A2A2A;padding:9px;margin-top:9px;">'
+      +'<div style="font-size:.73rem;color:#888;margin-bottom:5px;">🔗 Lien de signature :</div>'
+      +'<div style="display:flex;gap:7px;align-items:center;flex-wrap:wrap;">'
+      +'<input type="text" value="'+sigUrl+'" readonly class="fi" style="flex:1;font-size:.72rem;color:#4CAF50;cursor:pointer;" onclick="this.select();">'
+      +'<button onclick="navigator.clipboard.writeText(\''+sigUrl+'\').then(function(){toast(\'Lien copié ✔\',\'success\');})" style="background:#333;border:1px solid #555;color:#ccc;padding:5px 10px;border-radius:8px;cursor:pointer;font-size:.78rem;">📋 Copier</button>'
+      +(editable?'<button onclick="sendLetterManual(\''+l.id+'\')" style="background:linear-gradient(135deg,#FF8732,#CC6600);color:#fff;border:none;padding:5px 10px;border-radius:8px;cursor:pointer;font-size:.78rem;font-family:\'Barlow Condensed\',sans-serif;font-weight:700;">📧 Envoyer</button>':'')
+      +'</div></div>';
+    if(editable)h+='<div style="display:flex;gap:9px;margin-top:10px;"><button class="btn btn-red" onclick="valLetter(\''+l.id+'\')">✅ Valider</button><button class="btn btn-gray" onclick="delLetter(\''+l.id+'\')">🗑️</button></div>';
+    h+='</div>';
+    return h;
   }).join('');
-  return h;
 }
 
-function openLetterModal(){
-  document.getElementById('let-search').value='';document.getElementById('let-emp-id').value='';
-  document.getElementById('let-drop').style.display='none';
-  document.getElementById('let-subject').value='';document.getElementById('let-body').value='';
-  openModal('modal-letter');
+async function sendLetterEmail(lid){
+  var l=DB.letters.find(function(x){return x.id===lid;});if(!l||!l.empEmail)return;
+  var st=SANCTIONS[l.sanctionType]||{label:'Courrier'};
+  var ms=DB.mailSettings||{};
+  var cc=(ms.ccRecipients||[]).concat((ms.recipients||[]).map(function(r){return r.email;})).filter(Boolean).join(',');
+  var sigUrl=window.location.origin+window.location.pathname+'#sign/'+lid;
+  var subj='[BK] '+st.label+' - '+l.empName;
+  var body=l.text+'\n\n────────────────────────────────────\n🔗 Lien pour signer ce document :\n'+sigUrl;
+  window.open('mailto:'+l.empEmail+(cc?'?cc='+encodeURIComponent(cc)+'&':'?')+'subject='+encodeURIComponent(subj)+'&body='+encodeURIComponent(body),'_blank');
+  try{await sb.patch('bks_letters','id=eq.'+lid,{sent_at:new Date().toISOString()});await loadAll();}catch(e){}
 }
 
-async function saveLetter(){
-  var empId=document.getElementById('let-emp-id').value;
-  if(!empId){showToast('Choisissez un équipier','error');return;}
-  var emp=S.employees.find(function(e){return e.id===empId;});
-  try{
-    await sb.insert('bks_letters',{emp_id:empId,resto_id:emp?emp.resto_id:curUser.restoId,type:document.getElementById('let-type').value,subject:document.getElementById('let-subject').value.trim(),body:document.getElementById('let-body').value.trim(),status:'pending',sig_status:'pending'});
-    await loadAll();closeModal('modal-letter');showToast('✅ Courrier enregistré','ok');document.getElementById('tab-content').innerHTML=renderLettres();
-  }catch(e){showToast('⚠️ Erreur','error');console.error(e);}
+function sendLetterManual(lid){
+  var l=DB.letters.find(function(x){return x.id===lid;});if(!l)return;
+  var mi=document.getElementById('ml-'+lid);var ta=document.getElementById('lt-'+lid);
+  var email=mi?mi.value.trim():l.empEmail;
+  if(!email||email.indexOf('@')<0){toast("Entrez l'email de l'employé",'error');return;}
+  if(ta)l.text=ta.value;l.empEmail=email;
+  var st=SANCTIONS[l.sanctionType]||{label:'Courrier'};
+  var ms=DB.mailSettings||{};
+  var cc=(ms.ccRecipients||[]).concat((ms.recipients||[]).map(function(r){return r.email;})).filter(Boolean).join(',');
+  var sigUrl=window.location.origin+window.location.pathname+'#sign/'+lid;
+  var subj='[BK] '+st.label+' - '+l.empName;
+  var body=l.text+'\n\n────────────────────────────────────\n🔗 Lien pour signer :\n'+sigUrl;
+  window.open('mailto:'+email+(cc?'?cc='+encodeURIComponent(cc)+'&':'?')+'subject='+encodeURIComponent(subj)+'&body='+encodeURIComponent(body),'_blank');
+  sb.patch('bks_letters','id=eq.'+lid,{sent_at:new Date().toISOString(),emp_email:email,body:l.text}).catch(function(){});
+  renderLetters();toast('Email ouvert ✔','success');
 }
 
-async function markLetterSent(id){
-  try{await sb.patch('bks_letters','id=eq.'+id,{status:'sent',sent_at:new Date().toISOString()});await loadAll();showToast('📤 Envoyé','ok');document.getElementById('tab-content').innerHTML=renderLettres();}
-  catch(e){showToast('⚠️ Erreur','error');}
+async function valLetter(lid){
+  var l=DB.letters.find(function(x){return x.id===lid;});if(!l)return;
+  var ta=document.getElementById('lt-'+lid);if(ta)l.text=ta.value;
+  try{await sb.patch('bks_letters','id=eq.'+lid,{status:'sent',body:l.text});await loadAll();updateVBadge();renderLetters();toast('Validé ✔','success');}
+  catch(e){toast('Erreur','error');}
+}
+async function delLetter(lid){
+  if(!confirm('Supprimer ce courrier ?'))return;
+  try{await sb.del('bks_letters','id=eq.'+lid);await loadAll();updateVBadge();renderLetters();toast('Supprimé','');}
+  catch(e){toast('Erreur','error');}
 }
 
-// ── SETTINGS ──────────────────────────────────────────────────────────────────
-function renderSettingsModal(){
-  var sett=S.settings||DEFAULT_SETT;
-  var pins=sett.global_pins||{admin:'0000',rh:'0000'};
-  var rPins=sett.resto_pins||{};
-  var rNames=sett.resto_names||{};
-  var ph='<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">'
-    +'<div><label class="fl">Admin</label><input class="fi" id="pin-admin" value="'+(pins.admin||'0000')+'" maxlength="4" inputmode="numeric"></div>'
-    +'<div><label class="fl">Superviseure</label><input class="fi" id="pin-rh" value="'+(pins.rh||'0000')+'" maxlength="4" inputmode="numeric"></div></div>';
-  Object.keys(RESTOS).forEach(function(rid){
-    var rp=rPins[rid]||{};
-    ph+='<div style="background:#111;border-radius:8px;padding:10px;margin-bottom:8px;">'
-      +'<div style="font-size:.8rem;font-weight:700;color:var(--orange);margin-bottom:8px;">'+RESTOS[rid].label+'</div>'
-      +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">';
-    ['directeur','manager1','manager2','manager3','manager4'].forEach(function(k){
-      ph+='<div><label class="fl">'+k+'</label><input class="fi" id="pin-'+rid+'-'+k+'" value="'+(rp[k]||'0000')+'" maxlength="4" inputmode="numeric"></div>';
-    });
-    ph+='</div></div>';
-  });
-  document.getElementById('pin-settings-content').innerHTML=ph;
+// ── PAGE SIGNATURE ────────────────────────────────────────────────────────────
+function showSignPage(lid){
+  document.getElementById('loading-screen').style.display='none';
+  var l=DB.letters.find(function(x){return x.id===lid;});
+  var sp=document.createElement('div');sp.style.cssText='min-height:100vh;background:#1A1A1A;';
+  sp.innerHTML='<div style="background:linear-gradient(135deg,#C01E00,#8B1500);padding:16px 24px;text-align:center;"><div style="font-family:\'Barlow Condensed\',sans-serif;font-weight:900;font-size:1.6rem;color:#F5A623;text-transform:uppercase;letter-spacing:3px;">🔥 BK Suivi — Signature</div></div><div style="max-width:640px;margin:0 auto;padding:24px;" id="sig-body"></div>';
+  document.body.prepend(sp);
+  var sb2=document.getElementById('sig-body');
+  if(!l){sb2.innerHTML='<p style="color:#cc5555;margin-top:20px;">Courrier introuvable.</p>';return;}
+  var st=SANCTIONS[l.sanctionType]||{label:'Courrier',color:'#FF8732'};
+  var done='';
+  if(l.sigStatus==='signed')done='<div style="text-align:center;padding:40px;"><div style="font-size:3rem;">✅</div><div style="font-family:\'Barlow Condensed\',sans-serif;font-size:1.4rem;font-weight:700;color:#4CAF50;margin-top:10px;">Document signé le '+new Date(l.signedAt).toLocaleDateString('fr-FR')+'</div></div>';
+  else if(l.sigStatus==='refused')done='<div style="text-align:center;padding:40px;"><div style="font-size:3rem;">❌</div><div style="font-family:\'Barlow Condensed\',sans-serif;font-size:1.4rem;font-weight:700;color:#cc5555;margin-top:10px;">Refus enregistré</div></div>';
+  var actions=done||'<div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:20px;"><button onclick="doSign(\''+lid+'\')" style="background:linear-gradient(135deg,#4CAF50,#2E7D32);color:#fff;border:none;padding:12px 28px;border-radius:8px;font-family:\'Barlow Condensed\',sans-serif;font-weight:700;font-size:1rem;text-transform:uppercase;letter-spacing:2px;cursor:pointer;">✅ Je signe ce document</button><button onclick="doRefuse(\''+lid+'\')" style="background:#333;color:#ccc;border:1px solid #555;padding:12px 28px;border-radius:8px;font-family:\'Barlow Condensed\',sans-serif;font-weight:700;font-size:1rem;text-transform:uppercase;letter-spacing:2px;cursor:pointer;">❌ Je refuse de signer</button></div>';
+  sb2.innerHTML='<div style="text-align:center;margin:20px 0;"><div style="font-family:\'Barlow Condensed\',sans-serif;font-size:1.8rem;font-weight:900;color:#F5A623;">'+st.label+'</div><div style="color:#aaa;margin-top:5px;">Destinataire : <strong style="color:#fff;">'+l.empName+'</strong></div></div><div style="background:#fafafa;color:#111;border-radius:8px;padding:28px;font-family:Georgia,serif;line-height:1.75;white-space:pre-wrap;margin:20px 0;font-size:.88rem;">'+l.text+'</div>'+actions;
+}
 
-  var nh='';
-  Object.keys(RESTOS).forEach(function(rid){
-    var rn=rNames[rid]||{};
-    nh+='<div style="background:#111;border-radius:8px;padding:10px;margin-bottom:8px;">'
-      +'<div style="font-size:.8rem;font-weight:700;color:var(--orange);margin-bottom:8px;">'+RESTOS[rid].label+'</div>'
-      +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">';
-    ['directeur','manager1','manager2','manager3','manager4'].forEach(function(k){
-      nh+='<div><label class="fl">'+k+'</label><input class="fi" id="name-'+rid+'-'+k+'" value="'+(rn[k]||k)+'"></div>';
-    });
-    nh+='</div></div>';
-  });
-  document.getElementById('names-settings-content').innerHTML=nh;
+async function doSign(lid){
+  var l=DB.letters.find(function(x){return x.id===lid;});if(!l)return;
+  try{await sb.patch('bks_letters','id=eq.'+lid,{sig_status:'signed',signed_at:new Date().toISOString()});document.getElementById('sig-body').innerHTML='<div style="text-align:center;padding:40px;"><div style="font-size:3rem;">✅</div><div style="font-family:\'Barlow Condensed\',sans-serif;font-size:1.4rem;font-weight:700;color:#4CAF50;margin-top:10px;">Signature enregistrée. Merci !</div></div>';}
+  catch(e){alert('Erreur');}
+}
+async function doRefuse(lid){
+  if(!confirm('Confirmer le refus de signature ?'))return;
+  var l=DB.letters.find(function(x){return x.id===lid;});if(!l)return;
+  try{await sb.patch('bks_letters','id=eq.'+lid,{sig_status:'refused',refused_at:new Date().toISOString()});document.getElementById('sig-body').innerHTML='<div style="text-align:center;padding:40px;"><div style="font-size:3rem;">❌</div><div style="font-family:\'Barlow Condensed\',sans-serif;font-size:1.4rem;font-weight:700;color:#cc5555;margin-top:10px;">Refus enregistré.</div></div>';}
+  catch(e){alert('Erreur');}
+}
+
+// ── PARAMÈTRES ────────────────────────────────────────────────────────────────
+function renderPinSettings(){
+  var c=document.getElementById('pin-settings');if(!c)return;
+  var r=curUser.role;var h='';
+  if(r==='franchise'){
+    h+='<div style="grid-column:1/-1;font-size:.76rem;color:#666;text-transform:uppercase;letter-spacing:1px;margin-bottom:3px;">Accès globaux</div>';
+    Object.keys(GLOBALS).forEach(function(k){var g=GLOBALS[k];h+='<div style="background:#1A1A1A;border-radius:8px;padding:13px;"><div style="font-size:.76rem;color:#888;text-transform:uppercase;letter-spacing:1px;margin-bottom:7px;">'+g.icon+' '+g.title+'</div><input type="text" maxlength="4" id="pin-g-'+k+'" class="fi" value="'+(DB.globalPins[k]||'0000')+'" style="text-align:center;font-size:1.3rem;letter-spacing:8px;font-family:\'Barlow Condensed\',sans-serif;font-weight:700;"></div>';});
+    Object.keys(RESTOS).forEach(function(rid){var resto=RESTOS[rid];h+='<div style="grid-column:1/-1;font-size:.76rem;color:#666;text-transform:uppercase;letter-spacing:1px;margin-top:10px;margin-bottom:3px;">'+resto.label+'</div>';Object.keys(PROFILES).forEach(function(k){var tmpl=PROFILES[k];var names=DB.restoNames[rid]||{};var pins=DB.restoPins[rid]||{};h+='<div style="background:#1A1A1A;border-radius:8px;padding:13px;"><div style="font-size:.76rem;color:#888;text-transform:uppercase;letter-spacing:1px;margin-bottom:7px;">'+tmpl.icon+' '+(names[k]||tmpl.title)+'</div><input type="text" maxlength="4" id="pin-'+rid+'-'+k+'" class="fi" value="'+(pins[k]||'0000')+'" style="text-align:center;font-size:1.3rem;letter-spacing:8px;font-family:\'Barlow Condensed\',sans-serif;font-weight:700;"></div>';});});
+  } else {
+    var rid=curUser.restoId;if(!rid)return;
+    Object.keys(PROFILES).forEach(function(k){var tmpl=PROFILES[k];var names=DB.restoNames[rid]||{};var pins=DB.restoPins[rid]||{};h+='<div style="background:#1A1A1A;border-radius:8px;padding:13px;"><div style="font-size:.76rem;color:#888;text-transform:uppercase;letter-spacing:1px;margin-bottom:7px;">'+tmpl.icon+' '+(names[k]||tmpl.title)+'</div><input type="text" maxlength="4" id="pin-'+rid+'-'+k+'" class="fi" value="'+(pins[k]||'0000')+'" style="text-align:center;font-size:1.3rem;letter-spacing:8px;font-family:\'Barlow Condensed\',sans-serif;font-weight:700;"></div>';});
+  }
+  c.innerHTML=h;
 }
 
 async function savePins(){
-  var sett=JSON.parse(JSON.stringify(S.settings||DEFAULT_SETT));
-  sett.global_pins={admin:document.getElementById('pin-admin').value,rh:document.getElementById('pin-rh').value};
-  sett.resto_pins=sett.resto_pins||{};
-  Object.keys(RESTOS).forEach(function(rid){
-    sett.resto_pins[rid]=sett.resto_pins[rid]||{};
-    ['directeur','manager1','manager2','manager3','manager4'].forEach(function(k){
-      sett.resto_pins[rid][k]=document.getElementById('pin-'+rid+'-'+k).value;
-    });
+  var r=curUser.role;
+  if(r==='franchise'){
+    Object.keys(GLOBALS).forEach(function(k){var inp=document.getElementById('pin-g-'+k);if(inp&&/^\d{4}$/.test(inp.value))DB.globalPins[k]=inp.value;});
+    Object.keys(RESTOS).forEach(function(rid){if(!DB.restoPins[rid])DB.restoPins[rid]={};Object.keys(PROFILES).forEach(function(k){var inp=document.getElementById('pin-'+rid+'-'+k);if(inp&&/^\d{4}$/.test(inp.value))DB.restoPins[rid][k]=inp.value;});});
+  } else {
+    var rid=curUser.restoId;if(!rid)return;if(!DB.restoPins[rid])DB.restoPins[rid]={};
+    Object.keys(PROFILES).forEach(function(k){var inp=document.getElementById('pin-'+rid+'-'+k);if(inp&&/^\d{4}$/.test(inp.value))DB.restoPins[rid][k]=inp.value;});
+  }
+  await saveDB();toast('Codes PIN enregistrés ✔','success');
+}
+
+function renderNamesSettings(){
+  var c=document.getElementById('names-settings');if(!c)return;
+  var r=curUser.role;var restos=r==='franchise'?Object.keys(RESTOS):[curUser.restoId];var h='';
+  restos.forEach(function(rid){
+    if(!rid)return;var resto=RESTOS[rid]||{label:rid};
+    h+='<div style="grid-column:1/-1;font-size:.76rem;color:#666;text-transform:uppercase;letter-spacing:1px;margin-top:8px;margin-bottom:3px;">'+resto.label+'</div>';
+    Object.keys(PROFILES).forEach(function(k){var tmpl=PROFILES[k];var names=DB.restoNames[rid]||{};h+='<div style="background:#1A1A1A;border-radius:8px;padding:13px;"><div style="font-size:.76rem;color:#888;text-transform:uppercase;letter-spacing:1px;margin-bottom:7px;">'+tmpl.icon+' '+tmpl.title+'</div><input type="text" id="nm-'+rid+'-'+k+'" class="fi" value="'+(names[k]||'')+'" placeholder="Nom..."></div>';});
   });
-  try{await sb.patch('bks_settings','id=eq.main',{global_pins:sett.global_pins,resto_pins:sett.resto_pins,updated_at:new Date().toISOString()});await loadAll();showToast('✅ PIN enregistrés','ok');}
-  catch(e){showToast('⚠️ Erreur','error');console.error(e);}
+  c.innerHTML=h;
 }
 
 async function saveNames(){
-  var sett=JSON.parse(JSON.stringify(S.settings||DEFAULT_SETT));
-  sett.resto_names=sett.resto_names||{};
-  Object.keys(RESTOS).forEach(function(rid){
-    sett.resto_names[rid]=sett.resto_names[rid]||{};
-    ['directeur','manager1','manager2','manager3','manager4'].forEach(function(k){
-      sett.resto_names[rid][k]=document.getElementById('name-'+rid+'-'+k).value;
-    });
-  });
-  try{await sb.patch('bks_settings','id=eq.main',{resto_names:sett.resto_names,updated_at:new Date().toISOString()});await loadAll();showToast('✅ Noms enregistrés','ok');}
-  catch(e){showToast('⚠️ Erreur','error');console.error(e);}
+  var r=curUser.role;var restos=r==='franchise'?Object.keys(RESTOS):[curUser.restoId];
+  restos.forEach(function(rid){if(!rid)return;if(!DB.restoNames[rid])DB.restoNames[rid]={};Object.keys(PROFILES).forEach(function(k){var inp=document.getElementById('nm-'+rid+'-'+k);if(inp&&inp.value.trim())DB.restoNames[rid][k]=inp.value.trim();});});
+  await saveDB();toast('Noms enregistrés ✔','success');
 }
 
-// ── RECHERCHE ─────────────────────────────────────────────────────────────────
-function searchEmp(q,dropId,hiddenId,inputId){
-  var drop=document.getElementById(dropId);
-  if(!q||q.length<2){drop.style.display='none';return;}
-  var ql=q.toLowerCase();
-  var emps=S.employees.filter(function(e){return !e.archived&&(e.role==='equipier');});
-  if(curUser.restoId)emps=emps.filter(function(e){return e.resto_id===curUser.restoId;});
-  var res=emps.filter(function(e){return e.name.toLowerCase().includes(ql)||(e.email||'').toLowerCase().includes(ql);}).slice(0,10);
-  if(!res.length){drop.innerHTML='<div class="search-item" style="color:#666;">Aucun résultat</div>';drop.style.display='block';return;}
-  drop.innerHTML=res.map(function(e){
-    return '<div class="search-item" onclick="selEmpResult(\''+e.id+'\','+JSON.stringify(e.name)+',\''+hiddenId+'\',\''+inputId+'\',\''+dropId+'\')"><strong>'+e.name+'</strong>'+(e.email?'<div style="font-size:.73rem;color:#888;">'+e.email+'</div>':'')+'</div>';
+function loadMailSettings(){
+  var ms=DB.mailSettings||{};
+  document.getElementById('rpt-time').value=ms.time||'22:00';
+  document.getElementById('sch-daily').checked=ms.daily!==false;
+  document.getElementById('sch-weekly').checked=ms.weekly!==false;
+  document.getElementById('sch-monthly').checked=ms.monthly!==false;
+}
+async function saveMailSettings(){
+  DB.mailSettings.time=document.getElementById('rpt-time').value;
+  DB.mailSettings.daily=document.getElementById('sch-daily').checked;
+  DB.mailSettings.weekly=document.getElementById('sch-weekly').checked;
+  DB.mailSettings.monthly=document.getElementById('sch-monthly').checked;
+  await saveDB();toast('Paramètres enregistrés ✔','success');schedReports();
+}
+async function addMailRcp(){
+  var role=document.getElementById('new-mail-role').value;var email=document.getElementById('new-mail').value.trim();
+  if(!email||email.indexOf('@')<0){toast('Adresse invalide','error');return;}
+  if(!DB.mailSettings.recipients)DB.mailSettings.recipients=[];
+  DB.mailSettings.recipients.push({role:role,email:email});
+  document.getElementById('new-mail').value='';renderMailRcps();await saveDB();toast('Destinataire ajouté','success');
+}
+function renderMailRcps(){var c=document.getElementById('mail-rcps');if(!c)return;c.innerHTML=(DB.mailSettings.recipients||[]).map(function(r,i){return '<div class="mail-tag">'+r.role+' : '+r.email+'<button onclick="removeMailRcp('+i+')">✕</button></div>';}).join('');}
+async function removeMailRcp(i){DB.mailSettings.recipients.splice(i,1);await saveDB();renderMailRcps();}
+async function addCC(){
+  var email=document.getElementById('new-cc').value.trim();if(!email||email.indexOf('@')<0){toast('Adresse invalide','error');return;}
+  if(!DB.mailSettings.ccRecipients)DB.mailSettings.ccRecipients=[];
+  DB.mailSettings.ccRecipients.push(email);document.getElementById('new-cc').value='';renderCCRcps();await saveDB();toast('Copie ajoutée','success');
+}
+function renderCCRcps(){var c=document.getElementById('cc-rcps');if(!c)return;c.innerHTML=(DB.mailSettings.ccRecipients||[]).map(function(e,i){return '<div class="mail-tag">📋 '+e+'<button onclick="removeCC('+i+')">✕</button></div>';}).join('');}
+async function removeCC(i){DB.mailSettings.ccRecipients.splice(i,1);await saveDB();renderCCRcps();}
+
+// ── RAPPORTS EMAIL ────────────────────────────────────────────────────────────
+function buildTextReport(period){
+  var pl={today:"Aujourd'hui",week:'7 derniers jours',month:'30 derniers jours',all:'Tout'};
+  var now=new Date();var incs=filterIncsByPeriod(period);var txt='=== RAPPORT BK SUIVI - '+pl[period]+' ===\nGénéré le '+now.toLocaleString('fr-FR')+'\n\n';
+  Object.keys(RESTOS).forEach(function(rid){var rIncs=incs.filter(function(i){var e=DB.employees.find(function(x){return x.id===i.empId;});return e&&e.restoId===rid;});txt+='\n— '+RESTOS[rid].label+' ('+rIncs.length+' incidents) —\n';rIncs.forEach(function(i){var emp=DB.employees.find(function(e){return e.id===i.empId;});var dt=new Date(i.datetime||i.createdAt).toLocaleString('fr-FR');var types=i.problems.map(function(pid){var p=PROBS.find(function(x){return x.id===pid;});return p?p.label:pid;}).join(', ');txt+='  '+dt+' | '+(emp?emp.name:'?')+' | '+types+'\n';});});
+  return txt;
+}
+function sendNow(period){
+  var ms=DB.mailSettings||{};if(!(ms.recipients&&ms.recipients.length)){toast('Aucun destinataire configuré','error');return;}
+  var body=buildTextReport(period);var pl={today:'Quotidien',week:'Hebdomadaire',month:'Mensuel'};
+  var subj='[BK Suivi] Rapport '+pl[period]+' - '+new Date().toLocaleDateString('fr-FR');
+  var emails=ms.recipients.map(function(r){return r.email;}).join(',');
+  window.open('mailto:'+emails+'?subject='+encodeURIComponent(subj)+'&body='+encodeURIComponent(body),'_blank');
+  toast('Rapport prêt à envoyer 📧','success');
+}
+function schedReports(){
+  clearInterval(window._schInt);
+  window._schInt=setInterval(function(){
+    var ms=DB.mailSettings||{};if(!ms.recipients||!ms.recipients.length)return;
+    var now=new Date();var hm=String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');
+    if(hm!==ms.time)return;
+    if(ms.daily)sendNow('today');if(ms.weekly&&now.getDay()===1)sendNow('week');if(ms.monthly&&now.getDate()===1)sendNow('month');
+  },60000);
+}
+
+// ── RECHERCHE EMPLOYÉ ─────────────────────────────────────────────────────────
+function filterEmpList(){
+  var q=document.getElementById('emp-search').value.trim().toLowerCase();
+  var dd=document.getElementById('emp-dropdown');if(!q){dd.style.display='none';return;}
+  var r=curUser.role;
+  var pool=DB.employees.filter(function(e){return !e.archived&&e.role==='equipier'&&(r==='franchise'||e.restoId===curUser.restoId);});
+  var res=pool.filter(function(e){return e.name.toLowerCase().indexOf(q)>=0||(e.email||'').toLowerCase().indexOf(q)>=0;}).slice(0,12);
+  if(!res.length){dd.innerHTML='<div style="padding:9px 13px;color:#555;">Aucun résultat</div>';dd.style.display='block';return;}
+  dd.innerHTML=res.map(function(e){
+    var rLbl=r==='franchise'&&RESTOS[e.restoId]?' <span style="color:#888;font-size:.72rem;">['+RESTOS[e.restoId].label+']</span>':'';
+    var eid=e.id;var ename=e.name.replace(/'/g,"\\'");
+    return '<div onclick="selectEmp(\''+eid+'\')" style="padding:9px 13px;cursor:pointer;border-bottom:1px solid #1E1E1E;" onmouseover="this.style.background=\'#1E1E1E\'" onmouseout="this.style.background=\'\'">'
+      +'<strong>'+e.name+'</strong>'+rLbl
+      +(e.email||e.phone?'<div style="font-size:.73rem;color:#888;">'+(e.email||'')+(e.phone?' · '+e.phone:'')+'</div>':'')
+      +'</div>';
   }).join('');
-  drop.style.display='block';
+  dd.style.display='block';
+}
+function selectEmp(id){
+  var e=DB.employees.find(function(x){return x.id===id;});if(!e)return;
+  document.getElementById('sel-emp').value=id;
+  document.getElementById('emp-search').value='';
+  document.getElementById('emp-dropdown').style.display='none';
+  document.getElementById('sel-emp-display').style.display='block';
+  document.getElementById('sel-emp-name').textContent=e.name;
+  var rLbl=RESTOS[e.restoId]?' · '+RESTOS[e.restoId].label:'';
+  document.getElementById('sel-emp-info').textContent=(e.email||'')+(e.phone?' · '+e.phone:'')+rLbl;
+}
+function clearEmpSel(){
+  document.getElementById('sel-emp').value='';
+  document.getElementById('sel-emp-display').style.display='none';
+  document.getElementById('emp-search').value='';
+  document.getElementById('emp-dropdown').style.display='none';
 }
 
-function selEmpResult(id,name,hiddenId,inputId,dropId){
-  document.getElementById(hiddenId).value=id;
-  document.getElementById(inputId).value=name;
-  document.getElementById(dropId).style.display='none';
+// ── CHAMPS EXTRA SPÉCIAUX ─────────────────────────────────────────────────────
+function calcRetard(pid){
+  var prev=document.getElementById('ex-'+pid+'-prev');
+  var arr=document.getElementById('ex-'+pid+'-arr');
+  var res=document.getElementById('ex-'+pid+'-result');
+  if(!prev||!arr||!prev.value||!arr.value){if(res)res.textContent='';return;}
+  var [ph,pm]=prev.value.split(':').map(Number);
+  var [ah,am]=arr.value.split(':').map(Number);
+  var diff=(ah*60+am)-(ph*60+pm);
+  if(diff<=0){if(res)res.textContent='⚠️ Heure invalide';return;}
+  var h=Math.floor(diff/60);var m=diff%60;
+  var txt=diff<60?'⏱ '+m+' min de retard':'⏱ '+h+'h'+String(m).padStart(2,'0')+' de retard';
+  if(res)res.textContent=txt;
+  extraData[pid]='prévu '+prev.value+' | arrivé '+arr.value+' | '+txt;
 }
+
+function addAbsenceDay(pid){
+  var inp=document.getElementById('ex-'+pid+'-input');
+  if(!inp||!inp.value)return;
+  var date=inp.value;
+  if(!extraData[pid])extraData[pid]=[];
+  if(typeof extraData[pid]==='string')extraData[pid]=extraData[pid]?extraData[pid].split(','):[];
+  if(extraData[pid].indexOf(date)>=0){inp.value='';return;}
+  extraData[pid].push(date);
+  inp.value='';
+  renderAbsenceTags(pid);
+}
+
+function removeAbsenceDay(pid,date){
+  if(!extraData[pid])return;
+  extraData[pid]=extraData[pid].filter(function(d){return d!==date;});
+  renderAbsenceTags(pid);
+}
+
+function renderAbsenceTags(pid){
+  var tags=document.getElementById('ex-'+pid+'-tags');if(!tags)return;
+  var days=extraData[pid]||[];
+  tags.innerHTML=days.map(function(d){
+    var df=new Date(d+'T12:00:00').toLocaleDateString('fr-FR',{weekday:'short',day:'2-digit',month:'2-digit'});
+    return '<span style="background:#2A1800;border:1px solid var(--orange);color:var(--orange);padding:2px 8px;border-radius:12px;font-size:.75rem;display:inline-flex;align-items:center;gap:5px;">'
+      +df+'<button onclick="removeAbsenceDay(\''+pid+'\',\''+d+'\')" style="background:none;border:none;color:#cc5555;cursor:pointer;font-size:.85rem;line-height:1;">✕</button></span>';
+  }).join('');
+}
+
+function updateDateRange(pid){
+  var from=document.getElementById('ex-'+pid+'-from');
+  var to=document.getElementById('ex-'+pid+'-to');
+  var res=document.getElementById('ex-'+pid+'-result');
+  if(!from||!to)return;
+  if(from.value&&to.value){
+    var df=new Date(from.value+'T12:00:00').toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit',year:'numeric'});
+    var dt=new Date(to.value+'T12:00:00').toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit',year:'numeric'});
+    var days=Math.round((new Date(to.value)-new Date(from.value))/(1000*60*60*24))+1;
+    if(res)res.textContent='📅 Du '+df+' au '+dt+' ('+days+' jour'+(days>1?'s':'')+')';
+    extraData[pid]='du '+df+' au '+dt+' ('+days+' jour'+(days>1?'s':'')+')';
+  } else {
+    if(res)res.textContent='';
+  }
+}
+
+
+var toastTm;
+function toast(msg,type){
+  var el=document.getElementById('toast');
+  el.textContent=msg;el.className=type?'show '+type:'show';
+  clearTimeout(toastTm);toastTm=setTimeout(function(){el.classList.remove('show');},3200);
+}
+
+window.onload=function(){schedReports();};
 </script>
 </body>
 </html>

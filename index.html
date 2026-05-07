@@ -216,6 +216,7 @@ textarea.fi{resize:vertical;min-height:75px;}
     <button onclick="goPage('incidents',this)">📋 Incidents</button>
     <button onclick="goPage('rapports',this)">📊 Rapports</button>
     <button onclick="goPage('validations',this)">✉️ Validations <span id="vbadge" style="background:var(--red);color:#fff;border-radius:50%;width:17px;height:17px;display:none;align-items:center;justify-content:center;font-size:.68rem;margin-left:3px;">0</span></button>
+    <button onclick="goPage('rapports-auto',this)">📬 Rapports auto</button>
     <button onclick="goPage('parametres',this)">⚙️ Paramètres</button>
   </nav>
 
@@ -296,18 +297,26 @@ textarea.fi{resize:vertical;min-height:75px;}
 
   <!-- ÉQUIPE -->
   <div class="page active" id="page-equipe">
-    <div id="eq-tabs" class="rtabs" style="display:none;">
-      <button class="rtab on" onclick="setEqTab(this,'all')">🌐 Tous</button>
+
+    <!-- Ligne 1 : sélection restaurant - Tous actif par défaut -->
+    <div id="eq-tabs" style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap;">
       <button class="rtab" onclick="setEqTab(this,'bk500')">🍔 BK 500</button>
       <button class="rtab" onclick="setEqTab(this,'bk509')">🍔 BK 509</button>
       <button class="rtab" onclick="setEqTab(this,'bk526')">🍔 BK 526</button>
+      <button class="rtab on" onclick="setEqTab(this,'all')">👥 Tous</button>
     </div>
-    <div style="display:flex;gap:9px;margin-bottom:14px;flex-wrap:wrap;">
-      <button class="rtab on" id="ef-actif" onclick="setEmpFilter(this,'actif')">✅ Actifs</button>
-      <button class="rtab" id="ef-archive" onclick="setEmpFilter(this,'archive')">📁 Archivés</button>
-      <button class="rtab" id="ef-tous" onclick="setEmpFilter(this,'tous')">👥 Tous</button>
+
+    <!-- Ligne 2 : filtre statut + bouton ajouter -->
+    <div id="eq-filters" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px;">
+      <div style="display:flex;gap:6px;">
+        <button class="rtab on" id="ef-actif" onclick="setEmpFilter(this,'actif')">✅ Actifs</button>
+        <button class="rtab" id="ef-archive" onclick="setEmpFilter(this,'archive')">📁 Archivés</button>
+      </div>
+      <button class="btn btn-red btn-sm" onclick="document.getElementById('add-emp-card').style.display=document.getElementById('add-emp-card').style.display==='none'?'block':'none'">➕ Ajouter</button>
     </div>
-    <div class="card" id="add-emp-card">
+
+    <!-- Formulaire ajout (masqué par défaut) -->
+    <div class="card" id="add-emp-card" style="display:none;">
       <div class="sec-title">➕ Ajouter un membre</div>
       <div class="form-row">
         <div><label class="flabel">Prénom Nom</label><input type="text" id="new-name" class="fi" placeholder="Jean Dupont"></div>
@@ -334,6 +343,7 @@ textarea.fi{resize:vertical;min-height:75px;}
       </div>
       <button class="btn btn-red" onclick="addEmp()">➕ Ajouter</button>
     </div>
+
     <div id="eq-list"></div>
   </div>
 
@@ -346,32 +356,22 @@ textarea.fi{resize:vertical;min-height:75px;}
     </div>
   </div>
 
-  <!-- PARAMÈTRES -->
-  <div class="page" id="page-parametres">
-    <div class="card">
-      <div class="sec-title">🔑 Codes PIN</div>
-      <div id="pin-settings" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:11px;"></div>
-      <button class="btn btn-red" style="margin-top:14px;" onclick="savePins()">💾 Enregistrer les PIN</button>
-    </div>
-    <div class="card">
-      <div class="sec-title">✏️ Noms des profils</div>
-      <div id="names-settings" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:11px;"></div>
-      <button class="btn btn-red" style="margin-top:14px;" onclick="saveNames()">💾 Enregistrer les noms</button>
-    </div>
+  <!-- RAPPORTS AUTO -->
+  <div class="page" id="page-rapports-auto">
     <div class="card">
       <div class="sec-title">📬 Rapports automatiques</div>
       <div class="form-row">
-        <div><label class="flabel">⏰ Heure d'envoi</label><input type="time" id="rpt-time" class="fi" value="22:00"></div>
+        <div><label class="flabel">⏰ Heure d'envoi quotidien</label><input type="time" id="rpt-time" class="fi" value="22:00"></div>
         <div><label class="flabel">📅 Fréquences</label>
           <div style="margin-top:6px;display:flex;flex-direction:column;gap:5px;">
-            <label style="display:flex;align-items:center;gap:7px;font-size:.86rem;color:#ccc;cursor:pointer;"><input type="checkbox" id="sch-daily" checked style="accent-color:var(--orange);"> Tous les jours</label>
-            <label style="display:flex;align-items:center;gap:7px;font-size:.86rem;color:#ccc;cursor:pointer;"><input type="checkbox" id="sch-weekly" checked style="accent-color:var(--orange);"> Chaque lundi</label>
-            <label style="display:flex;align-items:center;gap:7px;font-size:.86rem;color:#ccc;cursor:pointer;"><input type="checkbox" id="sch-monthly" checked style="accent-color:var(--orange);"> Le 1er du mois</label>
+            <label style="display:flex;align-items:center;gap:7px;font-size:.86rem;color:#ccc;cursor:pointer;"><input type="checkbox" id="sch-daily" checked style="accent-color:var(--orange);"> Tous les jours à 22h00</label>
+            <label style="display:flex;align-items:center;gap:7px;font-size:.86rem;color:#ccc;cursor:pointer;"><input type="checkbox" id="sch-weekly" checked style="accent-color:var(--orange);"> Chaque lundi à 9h00</label>
+            <label style="display:flex;align-items:center;gap:7px;font-size:.86rem;color:#ccc;cursor:pointer;"><input type="checkbox" id="sch-monthly" checked style="accent-color:var(--orange);"> Le 1er du mois à 9h00</label>
           </div>
         </div>
       </div>
       <div style="margin-top:12px;">
-        <label class="flabel">📧 Destinataires des rapports</label>
+        <label class="flabel">📧 Destinataires supplémentaires</label>
         <div style="display:flex;gap:8px;margin-top:6px;flex-wrap:wrap;">
           <select id="new-mail-role" class="fi" style="width:auto;"><option value="RH">RH</option><option value="Directeur">Directeur</option><option value="Superviseur">Superviseur</option><option value="Franchisé">Franchisé</option></select>
           <input type="email" id="new-mail" class="fi" placeholder="email@exemple.com" style="flex:1;min-width:180px;">
@@ -396,8 +396,22 @@ textarea.fi{resize:vertical;min-height:75px;}
           <button class="btn btn-gray btn-sm" onclick="sendNow('month')">📊 Rapport mois</button>
         </div>
         <p style="font-size:.75rem;color:#555;margin-top:10px;">⏰ Envoi automatique : tous les jours à 22h00 · lundis à 9h00 · 1er du mois à 9h00</p>
-        <p style="font-size:.75rem;color:#555;margin-top:4px;">📧 Destinataires : tous les directeurs avec email + liste ci-dessus</p>
       </div>
+
+      <!-- APERÇU DESTINATAIRES -->
+      <div style="margin-top:16px;padding-top:14px;border-top:1px solid #333;">
+        <div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1rem;color:var(--orange);margin-bottom:12px;">👁️ Aperçu — Qui reçoit quoi</div>
+        <div id="apercu-destinataires"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PARAMÈTRES -->
+  <div class="page" id="page-parametres">
+    <div class="card">
+      <div class="sec-title">🔑 Codes PIN</div>
+      <div id="pin-settings" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:11px;"></div>
+      <button class="btn btn-red" style="margin-top:14px;" onclick="savePins()">💾 Enregistrer les PIN</button>
     </div>
   </div>
 </div>
@@ -410,6 +424,12 @@ textarea.fi{resize:vertical;min-height:75px;}
     <div style="margin-bottom:11px;"><label class="flabel">Prénom Nom</label><input type="text" id="edit-name" class="fi"></div>
     <div style="margin-bottom:11px;"><label class="flabel">Rôle</label><select id="edit-role" class="fi"><option value="equipier">Équipier</option><option value="leader">Leader</option><option value="manager">Manager</option><option value="directeur">Directeur</option></select></div>
     <div style="margin-bottom:11px;"><label class="flabel">E-mail</label><input type="email" id="edit-email" class="fi" placeholder="email@exemple.com"></div>
+    <div id="edit-pin-row" style="display:none;margin-bottom:11px;">
+      <label class="flabel">🔑 Code PIN (4 chiffres)</label>
+      <input type="text" id="edit-pin" class="fi" maxlength="4" inputmode="numeric" placeholder="0000" style="text-align:center;font-size:1.3rem;letter-spacing:8px;font-family:'Barlow Condensed',sans-serif;font-weight:700;">
+      <input type="hidden" id="edit-pin-tile">
+      <input type="hidden" id="edit-pin-resto">
+    </div>
     <div id="edit-exit-date-row" style="display:none;margin-bottom:11px;"><label class="flabel">📅 Date de sortie définitive</label><input type="date" id="edit-exit-def" class="fi"></div>
     <div style="display:flex;gap:9px;margin-top:16px;justify-content:flex-end;">
       <button class="btn btn-gray" onclick="closeModal('modal-edit')">Annuler</button>
@@ -435,6 +455,28 @@ textarea.fi{resize:vertical;min-height:75px;}
       <button class="btn btn-gray" onclick="closeModal('modal-exit')">Annuler</button>
       <button class="btn btn-red" onclick="confirmExit()">📤 Confirmer</button>
     </div>
+  </div>
+</div>
+
+<div class="modal-ov" id="modal-cancel-inc">
+  <div class="modal" style="max-width:340px;text-align:center;">
+    <div class="modal-title" style="color:var(--red);">🚫 Annuler un incident</div>
+    <p style="font-size:.85rem;color:#aaa;margin-bottom:6px;">Incident de <strong id="cancel-inc-name"></strong></p>
+    <p style="font-size:.8rem;color:#888;margin-bottom:16px;">Entrez votre code PIN pour confirmer l'annulation</p>
+    <input type="password" id="cancel-pin-val" class="fi" maxlength="4" inputmode="numeric" placeholder="••••" style="text-align:center;font-size:1.5rem;letter-spacing:8px;margin-bottom:8px;">
+    <div id="cancel-pin-err" style="color:var(--red);font-size:.8rem;min-height:18px;margin-bottom:12px;"></div>
+    <div style="display:flex;gap:8px;">
+      <button class="btn btn-gray" style="flex:1;" onclick="closeModal('modal-cancel-inc')">Annuler</button>
+      <button class="btn btn-red" style="flex:1;" onclick="confirmAnnulation()">✔ Confirmer</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-ov" id="modal-historique">
+  <div class="modal" style="width:500px;max-width:96vw;">
+    <div class="modal-title" id="histo-title">📋 Historique</div>
+    <div id="histo-content"></div>
+    <button class="btn btn-gray" style="margin-top:16px;width:100%;" onclick="closeModal('modal-historique')">Fermer</button>
   </div>
 </div>
 
@@ -703,8 +745,8 @@ function checkPin() {
     var isGlobal = r==='franchise';
     var isDir = r==='directeur';
     var isMgr = r==='manager';
+    var isAdmin = r==='franchise';
     var canSeeAll = isGlobal || isDir;
-    document.getElementById('eq-tabs').style.display = isGlobal?'flex':'none';
     document.getElementById('rpt-tabs').style.display = isGlobal?'flex':'none';
     // Masquer onglets selon rôle
     var navBtns = document.querySelectorAll('#main-nav button');
@@ -713,10 +755,13 @@ function checkPin() {
       if (isMgr) {
         // Manager : uniquement Incidents
         b.style.display = (txt.indexOf('Incidents')>=0) ? '' : 'none';
-      } else if (!canSeeAll) {
-        b.style.display = '';
       } else {
-        b.style.display = '';
+        // Rapports auto et Paramètres : uniquement Admin et Superviseure
+        if (txt.indexOf('Rapports auto')>=0 || txt.indexOf('Paramètres')>=0) {
+          b.style.display = isAdmin ? '' : 'none';
+        } else {
+          b.style.display = '';
+        }
       }
     });
     if (isGlobal) document.getElementById('new-resto-row').style.display = 'block';
@@ -756,12 +801,26 @@ function goPage(id, btn) {
   document.querySelectorAll('nav button').forEach(function(b){b.classList.remove('active');});
   document.getElementById('page-'+id).classList.add('active');
   if (btn) btn.classList.add('active');
-  if (id==='rapports'){fillRptPersons();genReport();}
+  if (id==='rapports'){
+    // Directeur : forcer son restaurant, pas de choix
+    if(curUser.role==='directeur'){
+      rptTab=curUser.restoId;
+      document.getElementById('rpt-tabs').style.display='none';
+    }
+    fillRptPersons();genReport();
+  }
   if (id==='equipe') renderEquipe();
   if (id==='validations') renderLetters();
-  if (id==='parametres'){renderPinSettings();renderNamesSettings();loadMailSettings();renderMailRcps();renderCCRcps();}
+  if (id==='rapports-auto'){loadMailSettings();renderMailRcps();renderCCRcps();renderApercuDestinataires();}
+  if (id==='parametres'){renderPinSettings();}
 }
-function setEqTab(btn,r){eqTab=r;document.querySelectorAll('#eq-tabs .rtab').forEach(function(b){b.classList.remove('on');});btn.classList.add('on');renderEquipe();}
+function setEqTab(btn,r){
+  eqTab=r;
+  document.querySelectorAll('#eq-tabs .rtab').forEach(function(b){b.classList.remove('on');});
+  btn.classList.add('on');
+  document.getElementById('add-emp-card').style.display='none';
+  renderEquipe();
+}
 function setRptTab(btn,r){rptTab=r;document.querySelectorAll('#rpt-tabs .rtab').forEach(function(b){b.classList.remove('on');});btn.classList.add('on');fillRptPersons();genReport();}
 function setEmpFilter(btn,f){empFilter=f;document.querySelectorAll('#page-equipe .rtab').forEach(function(b){b.classList.remove('on');});btn.classList.add('on');renderEquipe();}
 
@@ -922,10 +981,12 @@ function renderHistory(){
     var sanc=SANCTIONS[i.sanctionType];
     var sancTag=sanc?'<span style="border:1px solid '+sanc.color+';color:'+sanc.color+';padding:1px 7px;border-radius:10px;font-size:.7rem;margin-left:5px;">'+sanc.icon+' '+sanc.label+'</span>':'';
     var sevLbl=sLbls[parseInt(i.severity)]||'';
+    var canCancel=curUser.role==='franchise'||curUser.role==='directeur';
     return '<div class="inc-item" data-s="'+i.severity+'">'
       +'<div class="inc-head"><span class="inc-who">👤 '+empName+restoLbl+sancTag+'</span><span class="inc-meta">'+dt+' · '+(i.reporterName||'?')+' · '+sevLbl+'</span></div>'
       +'<div class="inc-tags">'+tags+'</div>'
       +(i.note?'<div class="inc-note">💬 '+i.note+'</div>':'')
+      +(canCancel?'<div style="margin-top:8px;"><button onclick="annulerInc(\''+i.id+'\')" style="background:transparent;border:1px solid #663333;color:#cc5555;padding:3px 10px;border-radius:6px;cursor:pointer;font-size:.75rem;">🚫 Annuler cet incident</button></div>':'')
       +'</div>';
   }).join('');
 }
@@ -1008,8 +1069,14 @@ function genReport(){
 function renderEquipe(){
   var list=document.getElementById('eq-list');if(!list)return;
   var r=curUser.role;var isGlobal=(r==='franchise');
-  var restosToShow=isGlobal?eqTab==='all'?Object.keys(RESTOS):[eqTab]:[curUser.restoId];
-  var canManage=r==='franchise'||r==='directeur';var h='';
+  var canManage=r==='franchise'||r==='directeur';
+  if(!isGlobal&&eqTab==='none') eqTab=curUser.restoId;
+  var restosToShow=eqTab==='none'?[]:eqTab==='all'?Object.keys(RESTOS):[eqTab];
+  if(eqTab==='none'){
+    list.innerHTML='<div class="empty"><div class="ei">🍔</div><p>Sélectionnez un restaurant</p></div>';
+    return;
+  }
+  var h='';
   restosToShow.forEach(function(restoId){
     if(!restoId)return;
     var resto=RESTOS[restoId]||{label:restoId};
@@ -1035,9 +1102,11 @@ function renderEquipe(){
           +'<div style="display:flex;align-items:center;gap:5px;flex-shrink:0;flex-wrap:wrap;justify-content:flex-end;">'
           +'<span class="role-pill rp-'+ro[0]+'">'+cap(ro)+'</span>'
           +(canManage&&!arch?'<button class="btn btn-gray btn-sm" onclick="openEdit(\''+e.id+'\')">✏️</button>':'')
+          +(canManage&&!arch?'<button class="btn btn-gray btn-sm" onclick="openHistorique(\''+e.id+'\')">📋 Historique</button>':'')
           +(canManage&&!arch&&(ro==='equipier'||ro==='leader')?'<button class="btn-danger" onclick="openExit(\''+e.id+'\')">📤</button>':'')
           +(canManage&&!arch?'<button class="btn-danger" onclick="delEmp(\''+e.id+'\')">🗑️</button>':'')
           +(canManage&&arch?'<button class="btn btn-gray btn-sm" onclick="openEdit(\''+e.id+'\')">✏️</button>':'')
+          +(canManage&&arch?'<button class="btn btn-gray btn-sm" onclick="openHistorique(\''+e.id+'\')">📋 Historique</button>':'')
           +(canManage&&arch?'<button class="btn btn-gray btn-sm" style="background:#1A3A1A;border-color:#3A7A3A;color:#4CAF50;" onclick="reactivateEmp(\''+e.id+'\')">♻️ Réactiver</button>':'')
           +(canManage&&arch?'<button class="btn-danger" onclick="delEmp(\''+e.id+'\')">🗑️</button>':'')
           +'</div></div>';
@@ -1095,6 +1164,20 @@ function openEdit(id){
   var row=document.getElementById('edit-exit-date-row');
   if(e.archived){row.style.display='block';document.getElementById('edit-exit-def').value=e.exitDateDefinitive||e.exitDate||'';}
   else row.style.display='none';
+  // Afficher le champ PIN pour directeur et manager
+  var pinRow=document.getElementById('edit-pin-row');
+  if(e.role==='directeur'||e.role==='manager'){
+    pinRow.style.display='block';
+    // Trouver le tileKey de cet employé
+    var tileKey=e.tileKey||'';
+    var restoId=e.restoId||'';
+    var currentPin=(DB.restoPins[restoId]&&tileKey&&DB.restoPins[restoId][tileKey])||'';
+    document.getElementById('edit-pin').value=currentPin;
+    document.getElementById('edit-pin-tile').value=tileKey;
+    document.getElementById('edit-pin-resto').value=restoId;
+  } else {
+    pinRow.style.display='none';
+  }
   document.getElementById('modal-edit').classList.add('open');
 }
 
@@ -1102,8 +1185,80 @@ async function saveEdit(){
   var id=document.getElementById('edit-id').value;
   var e=DB.employees.find(function(x){return x.id===id;});if(!e)return;
   var data={name:document.getElementById('edit-name').value.trim()||e.name,role:document.getElementById('edit-role').value,email:document.getElementById('edit-email').value.trim()};
-  try {await sb.patch('bks_employees','id=eq.'+id,data);await loadAll();closeModal('modal-edit');renderEquipe();fillFilters();fillRptPersons();toast(data.name+' mis à jour ✔','success');}
+  try {
+    await sb.patch('bks_employees','id=eq.'+id,data);
+    // Sauvegarder le PIN si directeur/manager
+    var pinRow=document.getElementById('edit-pin-row');
+    if(pinRow.style.display!=='none'){
+      var pin=document.getElementById('edit-pin').value;
+      var tileKey=document.getElementById('edit-pin-tile').value;
+      var restoId=document.getElementById('edit-pin-resto').value;
+      if(pin&&/^\d{4}$/.test(pin)&&tileKey&&restoId){
+        if(!DB.restoPins[restoId])DB.restoPins[restoId]={};
+        DB.restoPins[restoId][tileKey]=pin;
+        await saveDB();
+      }
+    }
+    await loadAll();closeModal('modal-edit');renderEquipe();fillFilters();fillRptPersons();toast(data.name+' mis à jour ✔','success');
+  }
   catch(e2){toast('Erreur','error');}
+}
+
+function openHistorique(id){
+  var e=DB.employees.find(function(x){return x.id===id;});if(!e)return;
+  document.getElementById('histo-title').textContent='📋 Historique — '+e.name;
+  var incs=DB.incidents.filter(function(i){return i.empId===id;})
+    .sort(function(a,b){return new Date(b.datetime||b.createdAt)-new Date(a.datetime||a.createdAt);});
+  var lets=DB.letters.filter(function(l){return l.empId===id;})
+    .sort(function(a,b){return new Date(b.createdAt)-new Date(a.createdAt);});
+  var h='';
+  if(!incs.length&&!lets.length){
+    h='<div class="empty"><div class="ei">📋</div><p>Aucun historique</p></div>';
+  } else {
+    // Stats rapides
+    h+='<div style="display:flex;gap:8px;margin-bottom:14px;">'
+      +'<div class="stat-card" style="flex:1;padding:10px;"><div class="stat-n" style="font-size:1.6rem;">'+incs.length+'</div><div class="stat-l">Incidents</div></div>'
+      +'<div class="stat-card" style="flex:1;padding:10px;"><div class="stat-n" style="font-size:1.6rem;">'+lets.length+'</div><div class="stat-l">Courriers</div></div>'
+      +'</div>';
+    // Incidents
+    if(incs.length){
+      h+='<div style="font-size:.78rem;color:var(--orange);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;font-weight:700;">⚠️ Incidents</div>';
+      var sLbls=['','🟢 Mineur','🟡 Modéré','🟠 Sérieux','🔴 Grave'];
+      h+=incs.map(function(i){
+        var tags=(i.problems||[]).map(function(pid){
+          var p=PROBS.find(function(x){return x.id===pid;});
+          var xtra=i.extraData&&i.extraData[pid]?Array.isArray(i.extraData[pid])?' ('+i.extraData[pid].length+' j)':' ('+i.extraData[pid]+')':'';
+          return p?'<span class="tag">'+p.icon+' '+p.label+xtra+'</span>':'';
+        }).join('');
+        var sanc=SANCTIONS[i.sanctionType];
+        var dt=i.datetime?new Date(i.datetime).toLocaleString('fr-FR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}):'—';
+        return '<div class="inc-item" data-s="'+(i.severity||'2')+'" style="margin-bottom:7px;">'
+          +'<div class="inc-head"><span style="font-size:.8rem;color:#aaa;">'+dt+'</span>'
+          +(sanc?'<span style="border:1px solid '+sanc.color+';color:'+sanc.color+';padding:1px 7px;border-radius:10px;font-size:.7rem;">'+sanc.icon+' '+sanc.label+'</span>':'')
+          +'</div>'
+          +'<div class="inc-tags">'+tags+'</div>'
+          +(i.note?'<div class="inc-note">💬 '+i.note+'</div>':'')
+          +'</div>';
+      }).join('');
+    }
+    // Courriers
+    if(lets.length){
+      h+='<div style="font-size:.78rem;color:var(--orange);text-transform:uppercase;letter-spacing:1px;margin:12px 0 8px;font-weight:700;">📄 Courriers</div>';
+      h+=lets.map(function(l){
+        var st=SANCTIONS[l.sanctionType]||{label:l.type,icon:'📄',color:'#FF8732'};
+        var ss=l.sigStatus==='signed'?'✍️ Signé':l.sigStatus==='refused'?'❌ Refusé':'⏳ En attente';
+        var dt=new Date(l.createdAt).toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit',year:'numeric'});
+        return '<div style="background:#1A1A1A;border-left:3px solid '+st.color+';border-radius:0 6px 6px 0;padding:9px 12px;margin-bottom:6px;">'
+          +'<div style="display:flex;justify-content:space-between;align-items:center;">'
+          +'<span style="font-size:.82rem;font-weight:700;">'+st.icon+' '+st.label+'</span>'
+          +'<span style="font-size:.72rem;color:#888;">'+dt+'</span></div>'
+          +'<div style="font-size:.75rem;color:#888;margin-top:3px;">'+ss+' · Rédigé par '+l.createdBy+'</div>'
+          +'</div>';
+      }).join('');
+    }
+  }
+  document.getElementById('histo-content').innerHTML=h;
+  document.getElementById('modal-historique').classList.add('open');
 }
 
 function openExit(id){
@@ -1263,27 +1418,24 @@ async function doRefuse(lid){
 // ── PARAMÈTRES ────────────────────────────────────────────────────────────────
 function renderPinSettings(){
   var c=document.getElementById('pin-settings');if(!c)return;
-  var r=curUser.role;var h='';
-  if(r==='franchise'){
-    h+='<div style="grid-column:1/-1;font-size:.76rem;color:#666;text-transform:uppercase;letter-spacing:1px;margin-bottom:3px;">Accès globaux</div>';
-    Object.keys(GLOBALS).forEach(function(k){var g=GLOBALS[k];h+='<div style="background:#1A1A1A;border-radius:8px;padding:13px;"><div style="font-size:.76rem;color:#888;text-transform:uppercase;letter-spacing:1px;margin-bottom:7px;">'+g.icon+' '+g.title+'</div><input type="text" maxlength="4" id="pin-g-'+k+'" class="fi" value="'+(DB.globalPins[k]||'0000')+'" style="text-align:center;font-size:1.3rem;letter-spacing:8px;font-family:\'Barlow Condensed\',sans-serif;font-weight:700;"></div>';});
-    Object.keys(RESTOS).forEach(function(rid){var resto=RESTOS[rid];h+='<div style="grid-column:1/-1;font-size:.76rem;color:#666;text-transform:uppercase;letter-spacing:1px;margin-top:10px;margin-bottom:3px;">'+resto.label+'</div>';Object.keys(PROFILES).forEach(function(k){var tmpl=PROFILES[k];var names=DB.restoNames[rid]||{};var pins=DB.restoPins[rid]||{};h+='<div style="background:#1A1A1A;border-radius:8px;padding:13px;"><div style="font-size:.76rem;color:#888;text-transform:uppercase;letter-spacing:1px;margin-bottom:7px;">'+tmpl.icon+' '+(names[k]||tmpl.title)+'</div><input type="text" maxlength="4" id="pin-'+rid+'-'+k+'" class="fi" value="'+(pins[k]||'0000')+'" style="text-align:center;font-size:1.3rem;letter-spacing:8px;font-family:\'Barlow Condensed\',sans-serif;font-weight:700;"></div>';});});
-  } else {
-    var rid=curUser.restoId;if(!rid)return;
-    Object.keys(PROFILES).forEach(function(k){var tmpl=PROFILES[k];var names=DB.restoNames[rid]||{};var pins=DB.restoPins[rid]||{};h+='<div style="background:#1A1A1A;border-radius:8px;padding:13px;"><div style="font-size:.76rem;color:#888;text-transform:uppercase;letter-spacing:1px;margin-bottom:7px;">'+tmpl.icon+' '+(names[k]||tmpl.title)+'</div><input type="text" maxlength="4" id="pin-'+rid+'-'+k+'" class="fi" value="'+(pins[k]||'0000')+'" style="text-align:center;font-size:1.3rem;letter-spacing:8px;font-family:\'Barlow Condensed\',sans-serif;font-weight:700;"></div>';});
-  }
+  var pins=DB.globalPins||{admin:'0000',rh:'0000'};
+  var h='<div style="background:#1A1A1A;border-radius:8px;padding:13px;">'
+    +'<div style="font-size:.76rem;color:#888;text-transform:uppercase;letter-spacing:1px;margin-bottom:7px;">🛡️ Admin</div>'
+    +'<input type="text" maxlength="4" id="pin-g-admin" class="fi" value="'+(pins.admin||'0000')+'" style="text-align:center;font-size:1.3rem;letter-spacing:8px;font-family:\'Barlow Condensed\',sans-serif;font-weight:700;" inputmode="numeric">'
+    +'</div>'
+    +'<div style="background:#1A1A1A;border-radius:8px;padding:13px;">'
+    +'<div style="font-size:.76rem;color:#888;text-transform:uppercase;letter-spacing:1px;margin-bottom:7px;">👩‍💼 Superviseure</div>'
+    +'<input type="text" maxlength="4" id="pin-g-rh" class="fi" value="'+(pins.rh||'0000')+'" style="text-align:center;font-size:1.3rem;letter-spacing:8px;font-family:\'Barlow Condensed\',sans-serif;font-weight:700;" inputmode="numeric">'
+    +'</div>'
+    +'<p style="font-size:.75rem;color:#555;margin-top:8px;">💡 Les codes PIN des directeurs et managers se modifient directement dans l\'onglet Équipe (✏️ sur leur fiche)</p>';
   c.innerHTML=h;
 }
 
 async function savePins(){
-  var r=curUser.role;
-  if(r==='franchise'){
-    Object.keys(GLOBALS).forEach(function(k){var inp=document.getElementById('pin-g-'+k);if(inp&&/^\d{4}$/.test(inp.value))DB.globalPins[k]=inp.value;});
-    Object.keys(RESTOS).forEach(function(rid){if(!DB.restoPins[rid])DB.restoPins[rid]={};Object.keys(PROFILES).forEach(function(k){var inp=document.getElementById('pin-'+rid+'-'+k);if(inp&&/^\d{4}$/.test(inp.value))DB.restoPins[rid][k]=inp.value;});});
-  } else {
-    var rid=curUser.restoId;if(!rid)return;if(!DB.restoPins[rid])DB.restoPins[rid]={};
-    Object.keys(PROFILES).forEach(function(k){var inp=document.getElementById('pin-'+rid+'-'+k);if(inp&&/^\d{4}$/.test(inp.value))DB.restoPins[rid][k]=inp.value;});
-  }
+  var inp_admin=document.getElementById('pin-g-admin');
+  var inp_rh=document.getElementById('pin-g-rh');
+  if(inp_admin&&/^\d{4}$/.test(inp_admin.value)) DB.globalPins.admin=inp_admin.value;
+  if(inp_rh&&/^\d{4}$/.test(inp_rh.value)) DB.globalPins.rh=inp_rh.value;
   await saveDB();toast('Codes PIN enregistrés ✔','success');
 }
 
@@ -1344,26 +1496,111 @@ function buildTextReport(period){
 }
 async function sendReportEmail(period){
   var pl={today:'Quotidien',week:'Hebdomadaire',month:'Mensuel'};
-  var body=buildTextReport(period);
   var subj='[BK Suivi] Rapport '+pl[period]+' - '+new Date().toLocaleDateString('fr-FR');
-  var emails=[];
-  // Directeurs depuis equipe
-  DB.employees.filter(function(e){return e.role==='directeur'&&!e.archived&&e.email;})
-    .forEach(function(e){if(emails.indexOf(e.email)<0)emails.push(e.email);});
-  // Destinataires manuels
   var ms=DB.mailSettings||{};
-  (ms.recipients||[]).forEach(function(r){if(r.email&&emails.indexOf(r.email)<0)emails.push(r.email);});
-  if(!emails.length){toast('Aucun destinataire — ajoutez des directeurs avec email','error');return;}
   var sent=0;
-  for(var i=0;i<emails.length;i++){
+
+  // Envoyer à chaque directeur le rapport de SON restaurant uniquement
+  var directeurs=DB.employees.filter(function(e){return e.role==='directeur'&&!e.archived&&e.email;});
+  for(var i=0;i<directeurs.length;i++){
+    var dir=directeurs[i];
+    var body=buildTextReportForResto(period, dir.restoId);
     try{
       await emailjs.send('checklist_bk','template_ijwamd3',{
-        to_email:emails[i],subject:subj,message:body,from_name:'BK Suivi'
+        to_email:dir.email, subject:subj+' — '+( RESTOS[dir.restoId]?RESTOS[dir.restoId].label:dir.restoId),
+        message:body, from_name:'BK Suivi'
       });
       sent++;
-    }catch(e){console.error('EmailJS',emails[i],e);}
+    }catch(e){console.error('EmailJS directeur',dir.email,e);}
   }
+
+  // Envoyer le rapport COMPLET (tous restos) aux destinataires manuels (admin/RH)
+  if(ms.recipients&&ms.recipients.length){
+    var bodyAll=buildTextReport(period);
+    for(var j=0;j<ms.recipients.length;j++){
+      try{
+        await emailjs.send('checklist_bk','template_ijwamd3',{
+          to_email:ms.recipients[j].email, subject:subj+' — Tous restaurants',
+          message:bodyAll, from_name:'BK Suivi'
+        });
+        sent++;
+      }catch(e){console.error('EmailJS rcp',ms.recipients[j].email,e);}
+    }
+  }
+
+  if(!sent){toast('Aucun destinataire — ajoutez des directeurs avec email','error');return;}
   toast('Rapport envoyé à '+sent+' destinataire'+(sent>1?'s':'')+' ✔','success');
+}
+
+function renderApercuDestinataires(){
+  var el=document.getElementById('apercu-destinataires');
+  if(!el)return;
+  var ms=DB.mailSettings||{};
+  var h='';
+
+  // 1. Directeurs par restaurant
+  h+='<div style="margin-bottom:12px;">';
+  h+='<div style="font-size:.78rem;color:#888;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">👔 Directeurs — rapport de leur restaurant uniquement</div>';
+
+  Object.keys(RESTOS).forEach(function(rid){
+    var dirs=DB.employees.filter(function(e){return e.role==='directeur'&&e.restoId===rid&&!e.archived;});
+    h+='<div style="background:#1A1A1A;border-radius:8px;padding:10px 14px;margin-bottom:6px;border-left:3px solid '+(rid==='bk500'?'#FF8732':rid==='bk509'?'#FF6B35':'#FFB347')+';">';
+    h+='<div style="font-family:\'Barlow Condensed\',sans-serif;font-weight:700;font-size:.9rem;color:'+(rid==='bk500'?'#FF8732':rid==='bk509'?'#FF6B35':'#FFB347')+';">🍔 '+RESTOS[rid].label+'</div>';
+    if(dirs.length){
+      dirs.forEach(function(d){
+        h+='<div style="font-size:.82rem;margin-top:4px;">';
+        h+='<span style="color:#fff;font-weight:600;">'+d.name+'</span>';
+        if(d.email){
+          h+='<span style="color:#4CAF50;margin-left:8px;">✉️ '+d.email+'</span>';
+        } else {
+          h+='<span style="color:var(--red);margin-left:8px;">⚠️ Pas d\'email — ne recevra pas le rapport</span>';
+        }
+        h+='</div>';
+      });
+    } else {
+      h+='<div style="font-size:.8rem;color:#555;margin-top:4px;">Aucun directeur enregistré</div>';
+    }
+    h+='</div>';
+  });
+  h+='</div>';
+
+  // 2. Destinataires manuels — rapport complet 3 restaurants
+  h+='<div>';
+  h+='<div style="font-size:.78rem;color:#888;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">🌐 Rapport complet (3 restaurants)</div>';
+  var rcps=ms.recipients||[];
+  if(rcps.length){
+    rcps.forEach(function(r){
+      h+='<div style="background:#1A1A1A;border-radius:8px;padding:10px 14px;margin-bottom:6px;border-left:3px solid #5BA3F5;">';
+      h+='<span style="color:#fff;font-weight:600;">'+r.role+'</span>';
+      h+='<span style="color:#4CAF50;margin-left:8px;">✉️ '+r.email+'</span>';
+      h+='</div>';
+    });
+  } else {
+    h+='<div style="background:#1A1A1A;border-radius:8px;padding:10px 14px;color:#555;font-size:.82rem;">Aucun destinataire ajouté — ajoutez-en ci-dessus</div>';
+  }
+  h+='</div>';
+
+  el.innerHTML=h;
+}
+
+
+  var pl={today:"Aujourd'hui",week:'7 derniers jours',month:'30 derniers jours',all:'Tout'};
+  var now=new Date();
+  var incs=filterIncsByPeriod(period).filter(function(i){
+    var e=DB.employees.find(function(x){return x.id===i.empId;});
+    return e&&e.restoId===restoId;
+  });
+  var txt='=== RAPPORT BK SUIVI - '+(RESTOS[restoId]?RESTOS[restoId].label:restoId)+' — '+pl[period]+' ===\n';
+  txt+='Généré le '+now.toLocaleString('fr-FR')+'\n\n';
+  txt+='Total : '+incs.length+' incident'+(incs.length>1?'s':'')+'\n\n';
+  incs.forEach(function(i){
+    var emp=DB.employees.find(function(e){return e.id===i.empId;});
+    var dt=new Date(i.datetime||i.createdAt).toLocaleString('fr-FR');
+    var types=i.problems.map(function(pid){var p=PROBS.find(function(x){return x.id===pid;});return p?p.label:pid;}).join(', ');
+    var sanc=SANCTIONS[i.sanctionType]?SANCTIONS[i.sanctionType].label:'';
+    txt+='  '+dt+' | '+(emp?emp.name:'?')+' | '+types+(sanc?' | '+sanc:'')+'\n';
+  });
+  return txt;
 }
 
 function sendNow(period){ sendReportEmail(period); }
@@ -1478,6 +1715,43 @@ function updateDateRange(pid){
   }
 }
 
+
+// ── ANNULATION INCIDENT AVEC PIN ─────────────────────────────────────────────
+var _incToCancel = null;
+
+function annulerInc(incId){
+  _incToCancel = incId;
+  var inc = DB.incidents.find(function(i){return i.id===incId;});
+  var emp = inc?DB.employees.find(function(e){return e.id===inc.empId;}):null;
+  document.getElementById('cancel-inc-name').textContent = emp?emp.name:'?';
+  document.getElementById('cancel-pin-val').value = '';
+  document.getElementById('cancel-pin-err').textContent = '';
+  document.getElementById('modal-cancel-inc').classList.add('open');
+}
+
+async function confirmAnnulation(){
+  var pin = document.getElementById('cancel-pin-val').value;
+  var ok = false;
+  if(pin === (DB.globalPins.admin||'0000') || pin === (DB.globalPins.rh||'0000')) ok = true;
+  if(!ok){
+    Object.keys(DB.restoPins||{}).forEach(function(rid){
+      Object.values(DB.restoPins[rid]||{}).forEach(function(p){if(p===pin)ok=true;});
+    });
+  }
+  if(!ok){
+    document.getElementById('cancel-pin-err').textContent = '❌ Code PIN incorrect';
+    return;
+  }
+  try{
+    await sb.del('bks_incidents','id=eq.'+_incToCancel);
+    await sb.del('bks_letters','id=eq.let_'+_incToCancel).catch(function(){});
+    await loadAll();
+    closeModal('modal-cancel-inc');
+    _incToCancel=null;
+    renderHistory();updateVBadge();
+    toast('Incident annulé ✔','success');
+  }catch(e){toast('Erreur','error');console.error(e);}
+}
 
 var toastTm;
 function toast(msg,type){

@@ -510,113 +510,7 @@ let DB=JSON.parse(localStorage.getItem('bk_v8')||'null')||{
   restoNames:{bk500:{directeur:'Directeur',manager1:'Manager 1',manager2:'Manager 2',manager3:'Manager 3',manager4:'Manager 4'},bk509:{directeur:'Directeur',manager1:'Manager 1',manager2:'Manager 2',manager3:'Manager 3',manager4:'Manager 4'},bk526:{directeur:'Directeur',manager1:'Manager 1',manager2:'Manager 2',manager3:'Manager 3',manager4:'Manager 4'}},
   mailSettings:{time:'22:00',daily:true,weekly:true,monthly:true,recipients:[],ccRecipients:[]}
 };
-// saveDB est remplacée par Supabase ci-dessous
-
-// ══════════════════════════════════════════════════════════════════════════════
-// BK SUIVI — Supabase sync
-// ══════════════════════════════════════════════════════════════════════════════
-const SUPA_URL = 'https://kzkopbvythfhdnjlnphm.supabase.co';
-const SUPA_KEY = 'sb_publishable_YU-stfHeY5y2UZYj1zNQKg_YQjK0340';
-
-const sb = {
-  async get(table, query) {
-    const url = `${SUPA_URL}/rest/v1/${table}?${query || 'select=*'}`;
-    const r = await fetch(url, { headers: { apikey: SUPA_KEY, Authorization: `Bearer ${SUPA_KEY}` } });
-    if (!r.ok) throw new Error(`GET ${table}: ${r.status}`);
-    return r.json();
-  },
-  async insert(table, data) {
-    const r = await fetch(`${SUPA_URL}/rest/v1/${table}`, {
-      method: 'POST',
-      headers: { apikey: SUPA_KEY, Authorization: `Bearer ${SUPA_KEY}`, 'Content-Type': 'application/json', Prefer: 'return=representation' },
-      body: JSON.stringify(data)
-    });
-    if (!r.ok) throw new Error(`INSERT ${table}: ${r.status} ${await r.text()}`);
-    const d = await r.json(); return Array.isArray(d) ? d[0] : d;
-  },
-  async patch(table, id, data) {
-    const r = await fetch(`${SUPA_URL}/rest/v1/${table}?id=eq.${id}`, {
-      method: 'PATCH',
-      headers: { apikey: SUPA_KEY, Authorization: `Bearer ${SUPA_KEY}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify(data)
-    });
-    return r.ok;
-  },
-  async patchWhere(table, where, data) {
-    const r = await fetch(`${SUPA_URL}/rest/v1/${table}?${where}`, {
-      method: 'PATCH',
-      headers: { apikey: SUPA_KEY, Authorization: `Bearer ${SUPA_KEY}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify(data)
-    });
-    return r.ok;
-  },
-  async del(table, id) {
-    const r = await fetch(`${SUPA_URL}/rest/v1/${table}?id=eq.${id}`, {
-      method: 'DELETE',
-      headers: { apikey: SUPA_KEY, Authorization: `Bearer ${SUPA_KEY}` }
-    });
-    return r.ok;
-  }
-};
-
-// ── Chargement initial depuis Supabase ────────────────────────────────────────
-async function loadFromSupabase() {
-  try {
-    const [emps, incs, lets, settArr] = await Promise.all([
-      sb.get('bks_employees', 'select=*&order=name.asc'),
-      sb.get('bks_incidents', 'select=*&order=created_at.desc'),
-      sb.get('bks_letters', 'select=*&order=created_at.desc'),
-      sb.get('bks_settings', 'select=*&id=eq.main'),
-    ]);
-    const sett = settArr[0] || {};
-    DB.employees = emps.map(e => ({
-      id: e.id, name: e.name, role: e.role, restoId: e.resto_id,
-      tileKey: e.tile_key, email: e.email || '', phone: e.phone || '',
-      archived: e.archived || false
-    }));
-    DB.incidents = (incs || []).map(i => ({
-      id: i.id, empId: i.emp_id, restoId: i.resto_id,
-      severity: i.severity, problems: i.problems || [],
-      extra: i.extra || {}, note: i.note || '',
-      createdBy: i.created_by, createdAt: i.created_at
-    }));
-    DB.letters = (lets || []).map(l => ({
-      id: l.id, empId: l.emp_id, restoId: l.resto_id,
-      type: l.type, subject: l.subject, body: l.body,
-      status: l.status, sigStatus: l.sig_status,
-      sentAt: l.sent_at, signedAt: l.signed_at, refusedAt: l.refused_at,
-      createdAt: l.created_at
-    }));
-    if (sett.global_pins) DB.globalPins = sett.global_pins;
-    if (sett.resto_pins) DB.restoPins = sett.resto_pins;
-    if (sett.resto_names) DB.restoNames = sett.resto_names;
-    if (sett.mail_settings) DB.mailSettings = sett.mail_settings;
-    console.log('Supabase chargé:', DB.employees.length, 'employés');
-  } catch(e) {
-    console.error('Erreur chargement Supabase:', e);
-  }
-}
-
-// ── saveDB : sauvegarde dans Supabase ─────────────────────────────────────────
-async function saveDB() {
-  try {
-    await sb.patchWhere('bks_settings', 'id=eq.main', {
-      global_pins: DB.globalPins,
-      resto_pins: DB.restoPins,
-      resto_names: DB.restoNames,
-      mail_settings: DB.mailSettings,
-      updated_at: new Date().toISOString()
-    });
-  } catch(e) { console.error('saveDB error:', e); }
-}
-
-// ── Sync automatique toutes les 5 secondes ────────────────────────────────────
-setInterval(async function() {
-  if (!curUser) return;
-  await loadFromSupabase();
-  if (typeof renderApp === 'function') renderApp();
-}, 5000);
-
+function saveDB(){localStorage.setItem('bk_v8',JSON.stringify(DB));}
 // Sync: ajouter les nouveaux employés si absents
 (function(){
   var base=[{"id": "bk500_d", "name": "Directeur", "role": "directeur", "restoId": "bk500", "tileKey": "directeur"}, {"id": "bk500_m1", "name": "Manager 1", "role": "manager", "restoId": "bk500", "tileKey": "manager1"}, {"id": "bk500_m2", "name": "Manager 2", "role": "manager", "restoId": "bk500", "tileKey": "manager2"}, {"id": "bk500_m3", "name": "Manager 3", "role": "manager", "restoId": "bk500", "tileKey": "manager3"}, {"id": "bk500_m4", "name": "Manager 4", "role": "manager", "restoId": "bk500", "tileKey": "manager4"}, {"id": "bk509_d", "name": "Directeur", "role": "directeur", "restoId": "bk509", "tileKey": "directeur"}, {"id": "bk509_m1", "name": "Manager 1", "role": "manager", "restoId": "bk509", "tileKey": "manager1"}, {"id": "bk509_m2", "name": "Manager 2", "role": "manager", "restoId": "bk509", "tileKey": "manager2"}, {"id": "bk509_m3", "name": "Manager 3", "role": "manager", "restoId": "bk509", "tileKey": "manager3"}, {"id": "bk509_m4", "name": "Manager 4", "role": "manager", "restoId": "bk509", "tileKey": "manager4"}, {"id": "bk526_d", "name": "Directeur", "role": "directeur", "restoId": "bk526", "tileKey": "directeur"}, {"id": "bk526_m1", "name": "Manager 1", "role": "manager", "restoId": "bk526", "tileKey": "manager1"}, {"id": "bk526_m2", "name": "Manager 2", "role": "manager", "restoId": "bk526", "tileKey": "manager2"}, {"id": "bk526_m3", "name": "Manager 3", "role": "manager", "restoId": "bk526", "tileKey": "manager3"}, {"id": "bk526_m4", "name": "Manager 4", "role": "manager", "restoId": "bk526", "tileKey": "manager4"}, {"id": "bk500_abrial_maeva", "name": "Maeva Abrial", "role": "equipier", "restoId": "bk500", "email": "maeva-abrial@live.fr", "phone": "0769655301", "archived": false}, {"id": "bk500_aubry_yohann", "name": "Yohann Aubry", "role": "equipier", "restoId": "bk500", "email": "yohann.aubry54500@gmail.com", "phone": "0641130544", "archived": false}, {"id": "bk500_bonne_alicia", "name": "Alicia Bonne", "role": "equipier", "restoId": "bk500", "email": "bonne.alicia18@gmail.com", "phone": "0745328904", "archived": false}, {"id": "bk500_boudon_ogier_arielle", "name": "Arielle Boudon-Ogier", "role": "equipier", "restoId": "bk500", "email": "arielle.boudonogier@orange.fr", "phone": "0670858868", "archived": false}, {"id": "bk500_bourgue_thomas", "name": "Thomas Bourgue", "role": "equipier", "restoId": "bk500", "email": "tbourgue0@gmail.com", "phone": "0695860787", "archived": false}, {"id": "bk500_calvez_tessa", "name": "Tessa Calvez", "role": "equipier", "restoId": "bk500", "email": "tessacalvez34@gmail.com", "phone": "06 84 03 29 73", "archived": false}, {"id": "bk500_canal_faustine_nolhan", "name": "Faustine Nolhan Canal", "role": "equipier", "restoId": "bk500", "email": "faufau.ca@gmail.com", "phone": "0680800435", "archived": false}, {"id": "bk500_caussan_lucie", "name": "Lucie Caussan", "role": "equipier", "restoId": "bk500", "email": "lucie.caussan05@gmail.com", "phone": "07 60 25 11 46", "archived": false}, {"id": "bk500_cervera_alexandre_camille", "name": "Camille Cervera-Alexandre", "role": "equipier", "restoId": "bk500", "email": "crv.cam7@gmail.com", "phone": "0767152576", "archived": false}, {"id": "bk500_chantel_bradley", "name": "Bradley Chantel", "role": "equipier", "restoId": "bk500", "email": "bradleychantel.pro@gmail.com", "phone": "07 69 62 08 58", "archived": false}, {"id": "bk500_charaffidine_anli_nourdine", "name": "Anli Nourdine Charaffidine", "role": "equipier", "restoId": "bk500", "email": "anlinourdinecharaffidine@gmail.com", "phone": "0698208338", "archived": false}, {"id": "bk500_clain_jean_raphael", "name": "Jean-Raphael Clain", "role": "equipier", "restoId": "bk500", "email": "clainjeanraphael@gmail.com", "phone": "0623333040", "archived": false}, {"id": "bk500_duhautpas_maeva", "name": "Maeva Duhautpas", "role": "equipier", "restoId": "bk500", "email": "maeva_dhp@outlook.fr", "phone": "0651234076", "archived": false}, {"id": "bk500_fuentes_shania", "name": "Shania Fuentes", "role": "equipier", "restoId": "bk500", "email": "shania.fuentes@hotmail.com", "phone": "0781414090", "archived": false}, {"id": "bk500_galliez_nolan", "name": "Nolan Galliez", "role": "equipier", "restoId": "bk500", "email": "nolan.tom@outlook.fr", "phone": "0766138236", "archived": false}, {"id": "bk500_gauthier_alexandra", "name": "Alexandra Gauthier", "role": "equipier", "restoId": "bk500", "email": "alexndra.gimeno@gmail.com", "phone": "0612083989", "archived": false}, {"id": "bk500_giuntini_gastou_nina", "name": "Nina Giuntini Gastou", "role": "equipier", "restoId": "bk500", "email": "ninagiuntinigastou@gmail.com", "phone": "06 48 02 51 33", "archived": false}, {"id": "bk500_hemled_julia", "name": "Julia Hemled", "role": "equipier", "restoId": "bk500", "email": "hmd.julia@gmail.com", "phone": "0643593740", "archived": false}, {"id": "bk500_jaimon_marie", "name": "Marie Jaimon", "role": "equipier", "restoId": "bk500", "email": "marie.jaimon@gmail.com", "phone": "07 68 50 58 18", "archived": false}, {"id": "bk500_jambert_enzo", "name": "Enzo Jambert", "role": "equipier", "restoId": "bk500", "email": "jambertenzo11@gmail.com", "phone": "0784422695", "archived": false}, {"id": "bk500_klier_morgan", "name": "Morgan Klier", "role": "equipier", "restoId": "bk500", "email": "morgan201202@gmail.com", "phone": "0648547743", "archived": false}, {"id": "bk500_labourgade_audrey", "name": "Audrey Labourgade", "role": "equipier", "restoId": "bk500", "email": "audrey.labourgade@gmail.com", "phone": "07 69 74 52 58", "archived": false}, {"id": "bk500_le_goff_alexandre", "name": "Alexandre Le Goff", "role": "equipier", "restoId": "bk500", "email": "alexi34@hotmail.fr", "phone": "0683754015", "archived": false}, {"id": "bk500_le_joly_jocelyn", "name": "Jocelyn Le Joly", "role": "equipier", "restoId": "bk500", "email": "jocelynlejoly@gmail.com", "phone": "0675137156", "archived": false}, {"id": "bk500_ledee_samy", "name": "Samy Ledee", "role": "equipier", "restoId": "bk500", "email": "samy.lde@icloud.com", "phone": "0767443613", "archived": false}, {"id": "bk500_marti_audrey", "name": "Audrey Marti", "role": "equipier", "restoId": "bk500", "email": "audreymartipro@gmail.com", "phone": "0608247500", "archived": false}, {"id": "bk500_medom_sadefo_michele", "name": "Michele Medom Sadefo", "role": "equipier", "restoId": "bk500", "email": "michelemedom@gmail.com", "phone": "0651216097", "archived": false}, {"id": "bk500_meunier_tony", "name": "Tony Meunier", "role": "equipier", "restoId": "bk500", "email": "tonymeunier02@icloud.com", "phone": "0685762382", "archived": false}, {"id": "bk500_molina_ilias", "name": "Ilias Molina", "role": "equipier", "restoId": "bk500", "email": "iliasmolina81@gmail.com", "phone": "06 46 04 55 67", "archived": false}, {"id": "bk500_montes_lou", "name": "Lou Montes", "role": "equipier", "restoId": "bk500", "email": "loumontes13@gmail.com", "phone": "0610691914", "archived": false}, {"id": "bk500_ourkoune_semia", "name": "Semia Ourkoune", "role": "equipier", "restoId": "bk500", "email": "ourkounesemia@gmail.com", "phone": "0610209568", "archived": false}, {"id": "bk500_pautrat_soane", "name": "Soane Pautrat", "role": "equipier", "restoId": "bk500", "email": "pautratsoane@gmail.com", "phone": "0673755975", "archived": false}, {"id": "bk500_phomsavanh_manon", "name": "Manon Phomsavanh", "role": "equipier", "restoId": "bk500", "email": "manon.phomsavanh@gmail.com", "phone": "0782410567", "archived": false}, {"id": "bk500_pronzola_chloe", "name": "Chloe Pronzola", "role": "equipier", "restoId": "bk500", "email": "chloe.pronzola17@gmail.com", "phone": "07 68 98 40 78", "archived": false}, {"id": "bk500_pumiglia_lucie", "name": "Lucie Pumiglia", "role": "equipier", "restoId": "bk500", "email": "lucie.pumiglia@icloud.com", "phone": "0768145700", "archived": false}, {"id": "bk500_ranaivoson_marie_joelle_norosoa", "name": "Marie Joelle Norosoa Ranaivoson", "role": "equipier", "restoId": "bk500", "email": "mariejoelle.rn@gmail.com", "phone": "0651385924", "archived": false}, {"id": "bk500_ranque_yanis", "name": "Yanis Ranque", "role": "equipier", "restoId": "bk500", "email": "yanisranque@gmail.com", "phone": "0626541918", "archived": false}, {"id": "bk500_regnault_julie", "name": "Julie Regnault", "role": "equipier", "restoId": "bk500", "email": "regnault.julie2003@gmail.com", "phone": "0601394105", "archived": false}, {"id": "bk500_sitaru_ariuna_simona", "name": "Ariuna Simona Sitaru", "role": "equipier", "restoId": "bk500", "email": "borooariuna@gmail.com", "phone": "0650379293", "archived": false}, {"id": "bk500_tahir_clelie", "name": "Clelie Tahir", "role": "equipier", "restoId": "bk500", "email": "clelietahir@icloud.com", "phone": "0773267376", "archived": false}, {"id": "bk500_tampel_hugo", "name": "Hugo Tampel", "role": "equipier", "restoId": "bk500", "email": "hugo.tampel.tarbouriech@gmail.com", "phone": "06 86 40 90 28", "archived": false}, {"id": "bk500_thomas_houssemand_hugo", "name": "Hugo Thomas-Houssemand", "role": "equipier", "restoId": "bk500", "email": "hugothomas67.pro@gmail.com", "phone": "06 58 70 61 56", "archived": false}, {"id": "bk500_tohozin_urielle", "name": "Urielle Tohozin", "role": "equipier", "restoId": "bk500", "email": "tohozincarine@gmail.com", "phone": "0745457316", "archived": false}, {"id": "bk500_valette_joris", "name": "Joris Valette", "role": "equipier", "restoId": "bk500", "email": "valettejoris@orange.fr", "phone": "0651984083", "archived": false}, {"id": "bk500_verdun_leia", "name": "Leia Verdun", "role": "equipier", "restoId": "bk500", "email": "verdun.leia@orange.fr", "phone": "0695770267", "archived": false}, {"id": "bk500_vertut_simon", "name": "Simon Vertut", "role": "equipier", "restoId": "bk500", "email": "s.vertut34@gmail.com", "phone": "06 41 91 37 17", "archived": false}, {"id": "bk500_vorbe_ilian", "name": "Ilian Vorbe", "role": "equipier", "restoId": "bk500", "email": "ilian.vorbe@gmail.com", "phone": "06 95 67 64 72", "archived": false}, {"id": "bk526_acakpo_morel", "name": "Morel Acakpo", "role": "equipier", "restoId": "bk526", "email": "acakpomorelfritzel@gmail.com", "phone": "06 34 81 69 76", "archived": false}, {"id": "bk526_adamowski_claire", "name": "Claire Adamowski", "role": "equipier", "restoId": "bk526", "email": "clairadamowski@gmail.com", "phone": "06 95 02 35 08", "archived": false}, {"id": "bk526_ait_hamouda_hedi", "name": "Hedi Ait Hamouda", "role": "equipier", "restoId": "bk526", "email": "hedi.aithamouda@gmail.com", "phone": "0769116612", "archived": false}, {"id": "bk526_alimi_kevin", "name": "Kevin Alimi", "role": "equipier", "restoId": "bk526", "email": "kevin.alimi@free.fr", "phone": "0743659062", "archived": false}, {"id": "bk526_amichot_christopher", "name": "Christopher Amichot", "role": "equipier", "restoId": "bk526", "email": "christopher.amichot@gmail.com", "phone": "06 49 17 47 34", "archived": false}, {"id": "bk526_bacon_noemie", "name": "Noemie Bacon", "role": "equipier", "restoId": "bk526", "email": "baconnoemie@icloud.com", "phone": "07 66 86 18 66", "archived": false}, {"id": "bk526_bedraoui_souleymene", "name": "Souleymene Bedraoui", "role": "equipier", "restoId": "bk526", "email": "bedraouisouleymene@gmail.com", "phone": "0667597450", "archived": false}, {"id": "bk526_bogning_nanda_rodion_frank", "name": "Rodion Frank Bogning Nanda", "role": "equipier", "restoId": "bk526", "email": "bogningnanda@gmail.com", "phone": "06 52 18 73 74", "archived": false}, {"id": "bk526_bolo_theo", "name": "Theo Bolo", "role": "equipier", "restoId": "bk526", "email": "bolotheo336@gmail.com", "phone": "0625483681", "archived": false}, {"id": "bk526_bonkhal_najat", "name": "Najat Bonkhal", "role": "equipier", "restoId": "bk526", "email": "bonkhalnajet7@gmail.com", "phone": "07 82 60 85 63", "archived": false}, {"id": "bk526_bonnoron_theo", "name": "Theo Bonnoron", "role": "equipier", "restoId": "bk526", "email": "theo.bonnoron@gmail.com", "phone": "06 95 65 11 63", "archived": false}, {"id": "bk526_bouchrani_raphael", "name": "Raphael Bouchrani", "role": "equipier", "restoId": "bk526", "email": "b.raphaelpro@gmail.com", "phone": "06 34 46 76 86", "archived": false}, {"id": "bk526_bouis_emma", "name": "Emma Bouis", "role": "equipier", "restoId": "bk526", "email": "emma.bouis@gmail.com", "phone": "06 43 66 32 27", "archived": false}, {"id": "bk526_boukile_hamza", "name": "Hamza Boukile", "role": "equipier", "restoId": "bk526", "email": "hmz.bkl2@gmail.com", "phone": "07 81 66 54 54", "archived": false}, {"id": "bk526_bourdin_florian", "name": "Florian Bourdin", "role": "equipier", "restoId": "bk526", "email": "florian.bourdin@sfr.fr", "phone": "06 68 68 11 90", "archived": false}, {"id": "bk526_bousselmi_ilyes", "name": "Ilyes Bousselmi", "role": "equipier", "restoId": "bk526", "email": "ilyes.bousselmi07@gmail.com", "phone": "0648904196", "archived": false}, {"id": "bk526_candela_jerome", "name": "Jerome Candela", "role": "equipier", "restoId": "bk526", "email": "jerome_candela@yahoo.fr", "phone": "06 70 11 78 14", "archived": false}, {"id": "bk526_carasco_charles", "name": "Charles Carasco", "role": "equipier", "restoId": "bk526", "email": "zizou.azerty34@gmail.com", "phone": "0745909487", "archived": false}, {"id": "bk526_cavero_anna", "name": "Anna Cavero", "role": "equipier", "restoId": "bk526", "email": "anna.cavero@icloud.com", "phone": "06 62 43 87 96", "archived": false}, {"id": "bk526_chalies_kyllian", "name": "Kyllian Chalies", "role": "equipier", "restoId": "bk526", "email": "chalieskyllian34@gmail.com", "phone": "0749355345", "archived": false}, {"id": "bk526_chevrin_alban", "name": "Alban Chevrin", "role": "equipier", "restoId": "bk526", "email": "alban.chevr1@gmail.com", "phone": "0767131723", "archived": false}, {"id": "bk526_cretey_arthur", "name": "Arthur Cretey", "role": "equipier", "restoId": "bk526", "email": "arthurcretey@gmail.com", "phone": "06 59 26 97 67", "archived": false}, {"id": "bk526_delost_lou", "name": "Lou Delost", "role": "equipier", "restoId": "bk526", "email": "delost.lou@gmail.com", "phone": "07 64 20 07 67", "archived": false}, {"id": "bk526_deltell_florentin", "name": "Florentin Deltell", "role": "equipier", "restoId": "bk526", "email": "florentin.deltell@gmail.com", "phone": "06 86 83 41 99", "archived": false}, {"id": "bk526_delvoye_julian", "name": "Julian Delvoye", "role": "equipier", "restoId": "bk526", "email": "luzghard@gmail.com", "phone": "07 71 37 16 40", "archived": false}, {"id": "bk526_dewaghe_orane", "name": "Orane Dewaghe", "role": "equipier", "restoId": "bk526", "email": "orane66@outlook.fr", "phone": "06 58 26 57 43", "archived": false}, {"id": "bk526_diagne_yaye", "name": "Yaye Diagne", "role": "equipier", "restoId": "bk526", "email": "diagneyayeawa5@gmail.com", "phone": "06 01 17 64 99", "archived": false}, {"id": "bk526_djemai_romero_lou", "name": "Lou Djemai-Romero", "role": "equipier", "restoId": "bk526", "email": "lloudrm78@icloud.com", "phone": "0750876043", "archived": false}, {"id": "bk526_duarte_adrian", "name": "Adrian Duarte", "role": "equipier", "restoId": "bk526", "email": "asduarte06@gmail.com", "phone": "06 02 03 57 89", "archived": false}, {"id": "bk526_duvernay_baptiste", "name": "Baptiste Duvernay", "role": "equipier", "restoId": "bk526", "email": "bapt.duvernay@gmail.com", "phone": "0695205852", "archived": false}, {"id": "bk526_ferrier_kevin", "name": "Kevin Ferrier", "role": "equipier", "restoId": "bk526", "email": "kevin.ferrier@live.fr", "phone": "07 69 86 54 38", "archived": false}, {"id": "bk526_fontaine_julie", "name": "Julie Fontaine", "role": "equipier", "restoId": "bk526", "email": "julie.fontaine31@gmail.com", "phone": "06 12 24 33 54", "archived": false}, {"id": "bk526_frazer_sarah", "name": "Sarah Frazer", "role": "equipier", "restoId": "bk526", "email": "frazer.sarah15@gmail.com", "phone": "0612020952", "archived": false}, {"id": "bk526_garcia_joe", "name": "Joe Garcia", "role": "equipier", "restoId": "bk526", "email": "djodjogarcia18@gmail.com", "phone": "07 61 86 39 05", "archived": false}, {"id": "bk526_gasparini_zoe", "name": "Zoe Gasparini", "role": "equipier", "restoId": "bk526", "email": "gzoe06@icloud.com", "phone": "07 69 06 77 65", "archived": false}, {"id": "bk526_gilles_caius", "name": "Caius Gilles", "role": "equipier", "restoId": "bk526", "email": "caiusgilles@gmail.com", "phone": "06 45 76 21 48", "archived": false}, {"id": "bk526_gombert_caldi_rohan", "name": "Rohan Gombert-Caldi", "role": "equipier", "restoId": "bk526", "email": "rohangc66@gmail.com", "phone": "06 13 93 75 76", "archived": false}, {"id": "bk526_hamraoui_marine", "name": "Marine Hamraoui", "role": "equipier", "restoId": "bk526", "email": "marine.hamraoui@orange.fr", "phone": "07 82 09 90 23", "archived": false}, {"id": "bk526_houillon_sylvain", "name": "Sylvain Houillon", "role": "equipier", "restoId": "bk526", "email": "slengteng@hotmail.fr", "phone": "07 60 79 59 63", "archived": false}, {"id": "bk526_lamarre_axel", "name": "Axel Lamarre", "role": "equipier", "restoId": "bk526", "email": "axelamarre2@gmail.com", "phone": "0695970234", "archived": false}, {"id": "bk526_laubacher_amandine", "name": "Amandine Laubacher", "role": "equipier", "restoId": "bk526", "email": "amandine.laubacher@outlook.com", "phone": "0766041955", "archived": false}, {"id": "bk526_le_minihi_camille", "name": "Camille Le Minihi", "role": "equipier", "restoId": "bk526", "email": "camille.leminihi123@hotmail.com", "phone": "06 23 19 36 42", "archived": false}, {"id": "bk526_leclercq_chloe", "name": "Chloe Leclercq", "role": "equipier", "restoId": "bk526", "email": "chloeleclercq143@gmail.com", "phone": "06 19 67 70 88", "archived": false}, {"id": "bk526_marest_maxence", "name": "Maxence Marest", "role": "equipier", "restoId": "bk526", "email": "maxence.marest@outlook.com", "phone": "0670352961", "archived": false}, {"id": "bk526_martinez_mella_jade", "name": "Jade Martinez-Mella", "role": "equipier", "restoId": "bk526", "email": "jade.mm.pro@gmail.com", "phone": "07 62 65 48 23", "archived": false}, {"id": "bk526_namane_habib", "name": "Habib Namane", "role": "equipier", "restoId": "bk526", "email": "hbibox34@gmail.com", "phone": "06 78 73 54 90", "archived": false}, {"id": "bk526_pachot_giroux_coline", "name": "Coline Pachot Giroux", "role": "equipier", "restoId": "bk526", "email": "c.pachotgiroux@gmail.com", "phone": "07 88 37 70 18", "archived": false}, {"id": "bk526_pierre_alexis", "name": "Alexis Pierre", "role": "equipier", "restoId": "bk526", "email": "alexispierre859@gmail.com", "phone": "06 31 68 06 26", "archived": false}, {"id": "bk526_pons_alexis", "name": "Alexis Pons", "role": "equipier", "restoId": "bk526", "email": "alexispons1@gmail.com", "phone": "06 51 38 20 90", "archived": false}, {"id": "bk526_prevot_eva", "name": "Eva Prevot", "role": "equipier", "restoId": "bk526", "email": "evaprvt2007@gmail.com", "phone": "0678401660", "archived": false}, {"id": "bk526_ribes_lucas", "name": "Lucas Ribes", "role": "equipier", "restoId": "bk526", "email": "ribes.lucas.lr@gmail.com", "phone": "06 37 54 68 72", "archived": false}, {"id": "bk526_romera_quentin", "name": "Quentin Romera", "role": "equipier", "restoId": "bk526", "email": "quentin.romera@outlook.fr", "phone": "06 48 36 85 00", "archived": false}, {"id": "bk526_rosier_geffrey", "name": "Geffrey Rosier", "role": "equipier", "restoId": "bk526", "email": "geffreyrosier@gmail.com", "phone": "06 99 51 36 37", "archived": false}, {"id": "bk526_rousselle_patrick", "name": "Patrick Rousselle", "role": "equipier", "restoId": "bk526", "email": "patrick234.rousselle@gmail.com", "phone": "06 18 25 57 97", "archived": false}, {"id": "bk526_soppi_laurent", "name": "Laurent Soppi", "role": "equipier", "restoId": "bk526", "email": "dylansoppi@gmail.com", "phone": "0695795138", "archived": false}, {"id": "bk526_souliman_delafosse_chany", "name": "Chany Souliman Delafosse", "role": "equipier", "restoId": "bk526", "email": "chanysoulidel973@gmail.com", "phone": "06 26 28 94 45", "archived": false}, {"id": "bk526_toader_liam", "name": "Liam Toader", "role": "equipier", "restoId": "bk526", "email": "liamtoader34@gmail.com", "phone": "06 25 78 63 65", "archived": false}, {"id": "bk526_vigroux_lucas", "name": "Lucas Vigroux", "role": "equipier", "restoId": "bk526", "email": "lucas.vigroux07@gmail.com", "phone": "0608535051", "archived": false}, {"id": "bk526_zitouni_adela", "name": "Adela Zitouni", "role": "equipier", "restoId": "bk526", "email": "adela.zitouni@hotmail.com", "phone": "07 84 92 93 84", "archived": false}, {"id": "bk509_ahmed_touma", "name": "Touma Ahmed", "role": "equipier", "restoId": "bk509", "email": "ahmedtouma.at@gmail.com", "phone": "06 68 66 38 15", "archived": false}, {"id": "bk509_ahoyo_gloria", "name": "Gloria Ahoyo", "role": "equipier", "restoId": "bk509", "email": "ahoyogloria2020@gmail.com", "phone": "0613923850", "archived": false}, {"id": "bk509_alexandre_cherly", "name": "Cherly Alexandre", "role": "equipier", "restoId": "bk509", "email": "cherly_alexandre1@outlook.com", "phone": "0782800805", "archived": false}, {"id": "bk509_baccelli_lily", "name": "Lily Baccelli", "role": "equipier", "restoId": "bk509", "email": "lilybac34@gmail.com", "phone": "0612020952", "archived": false}, {"id": "bk509_ben_aguegueche_nadia", "name": "Nadia Ben Aguegueche", "role": "equipier", "restoId": "bk509", "email": "nadia.benaguegueche2@gmail.com", "phone": "0620718288", "archived": false}, {"id": "bk509_ben_amor_mehdi", "name": "Mehdi Ben Amor", "role": "equipier", "restoId": "bk509", "email": "mehdibenamor21@gmail.com", "phone": "06 51 05 95 21", "archived": false}, {"id": "bk509_benali_noam", "name": "Noam Benali", "role": "equipier", "restoId": "bk509", "email": "noamaigle@gmail.com", "phone": "0788765224", "archived": false}, {"id": "bk509_benhamida_anissa", "name": "Anissa Benhamida", "role": "equipier", "restoId": "bk509", "email": "benhamida34080@gmail.com", "phone": "0769562702", "archived": false}, {"id": "bk509_berna_tom", "name": "Tom Berna", "role": "equipier", "restoId": "bk509", "email": "berna.tom34@gmail.com", "phone": "0662948667", "archived": false}, {"id": "bk509_bourouiba_nassil", "name": "Nassil Bourouiba", "role": "equipier", "restoId": "bk509", "email": "n.bourouiba@gmail.com", "phone": "0652182888", "archived": false}, {"id": "bk509_carmona_esteban", "name": "Esteban Carmona", "role": "equipier", "restoId": "bk509", "email": "carmona.esteban2004@gmail.com", "phone": "07 69 39 28 18", "archived": false}, {"id": "bk509_djihadi_antoine", "name": "Antoine Djihadi", "role": "equipier", "restoId": "bk509", "email": "antoinedjihadi@gmail.com", "phone": "0627871945", "archived": false}, {"id": "bk509_el_jabari_martin_lana", "name": "Lana El Jabari-Martin", "role": "equipier", "restoId": "bk509", "email": "lanaaemartin@gmail.com", "phone": "07 69 29 10 11", "archived": false}, {"id": "bk509_el_maamri_malia", "name": "Malia El Maamri", "role": "equipier", "restoId": "bk509", "email": "melgraphique@gmail.com", "phone": "0761871910", "archived": false}, {"id": "bk509_esteve_valentine", "name": "Valentine Esteve", "role": "equipier", "restoId": "bk509", "email": "valentine34400@gmail.com", "phone": "06 49 64 68 77", "archived": false}, {"id": "bk509_ettabti_imane", "name": "Imane Ettabti", "role": "equipier", "restoId": "bk509", "email": "imane.444y@gmail.com", "phone": "0746432549", "archived": false}, {"id": "bk509_girard_marie", "name": "Marie Girard", "role": "equipier", "restoId": "bk509", "email": "marie.girard.0369@icloud.com", "phone": "0672874052", "archived": false}, {"id": "bk509_gonzalez_luna", "name": "Luna Gonzalez", "role": "equipier", "restoId": "bk509", "email": "gonzalezluna260303@gmail.com", "phone": "0615219653", "archived": false}, {"id": "bk509_gorius_margot", "name": "Margot Gorius", "role": "equipier", "restoId": "bk509", "email": "goriusmargot.nz@gmail.com", "phone": "0641553667", "archived": false}, {"id": "bk509_kemp_lucille", "name": "Lucille Kemp", "role": "equipier", "restoId": "bk509", "email": "lucillekemp@icloud.com", "phone": "0634641072", "archived": false}, {"id": "bk509_lacoste_gabriel", "name": "Gabriel Lacoste", "role": "equipier", "restoId": "bk509", "email": "gabriel.lacoste.1987@gmail.com", "phone": "0621860083", "archived": false}, {"id": "bk509_mari_lloria_florian", "name": "Florian Mari Lloria", "role": "equipier", "restoId": "bk509", "email": "marilloriaflorian@gmail.com", "phone": "0789030368", "archived": false}, {"id": "bk509_martal_ingrid", "name": "Ingrid Martal", "role": "equipier", "restoId": "bk509", "email": "martalingrid@gmail.com", "phone": "0668829670", "archived": false}, {"id": "bk509_martin_de_saint_semmera_brandon", "name": "Brandon Martin De Saint Semmera", "role": "equipier", "restoId": "bk509", "email": "brandon.mdss@outlook.com", "phone": "0781199532", "archived": false}, {"id": "bk509_matelet_joakym", "name": "Joakym Matelet", "role": "equipier", "restoId": "bk509", "email": "joakymmatelet@gmail.com", "phone": "07 67 29 99 11", "archived": false}, {"id": "bk509_mathieu_morgane", "name": "Morgane Mathieu", "role": "equipier", "restoId": "bk509", "email": "morgane.math@free.fr", "phone": "695258655", "archived": false}, {"id": "bk509_meissonnier_matteo", "name": "Matteo Meissonnier", "role": "equipier", "restoId": "bk509", "email": "matteo.meisso@gmail.com", "phone": "0781543775", "archived": false}, {"id": "bk509_noviant_noah", "name": "Noah Noviant", "role": "equipier", "restoId": "bk509", "email": "noahnoviant@icloud.com", "phone": "0782921295", "archived": false}, {"id": "bk509_patry_celia", "name": "Celia Patry", "role": "equipier", "restoId": "bk509", "email": "patrycelia7@gmail.com", "phone": "06 44 08 18 02", "archived": false}, {"id": "bk509_perrier_sylver", "name": "Sylver Perrier", "role": "equipier", "restoId": "bk509", "email": "sylverperrier@gmail.com", "phone": "06 67 13 56 12", "archived": false}, {"id": "bk509_picq_noemie", "name": "Noemie Picq", "role": "equipier", "restoId": "bk509", "email": "npicq750@gmail.com", "phone": "0767728916", "archived": false}, {"id": "bk509_pierron_thomas", "name": "Thomas Pierron", "role": "equipier", "restoId": "bk509", "email": "thomasp34670@gmail.com", "phone": "0612487372", "archived": false}, {"id": "bk509_poppe_kevin", "name": "Kevin Poppe", "role": "equipier", "restoId": "bk509", "email": "kevinpoppe1904@gmail.com", "phone": "0671375695", "archived": false}, {"id": "bk509_reboux_elyn", "name": "Elyn Reboux", "role": "equipier", "restoId": "bk509", "email": "elynreboux1@gmail.com", "phone": "0782787635", "archived": false}, {"id": "bk509_rico_romain", "name": "Romain Rico", "role": "equipier", "restoId": "bk509", "email": "romainrico10@gmail.com", "phone": "0676660194", "archived": false}, {"id": "bk509_robert_maitrejean_noelie", "name": "Noelie Robert Maitrejean", "role": "equipier", "restoId": "bk509", "email": "robertnoelie1809@gmail.com", "phone": "0610315149", "archived": false}, {"id": "bk509_rozmanowski_dimitri", "name": "Dimitri Rozmanowski", "role": "equipier", "restoId": "bk509", "email": "rozmanowskidimitri@gmail.com", "phone": "0610758263", "archived": false}, {"id": "bk509_saint_rapt_cassandre", "name": "Cassandre Saint-Rapt", "role": "equipier", "restoId": "bk509", "email": "cassandresaintrapt@gmail.com", "phone": "0688036170", "archived": false}, {"id": "bk509_santanon_nicolas", "name": "Nicolas Santanon", "role": "equipier", "restoId": "bk509", "email": "nicolas.santanon@gmail.com", "phone": "0649771521", "archived": false}, {"id": "bk509_segado_clara", "name": "Clara Segado", "role": "equipier", "restoId": "bk509", "email": "segado.clara66@icloud.com", "phone": "06 74 76 85 45", "archived": false}, {"id": "bk509_segura_alexis", "name": "Alexis Segura", "role": "equipier", "restoId": "bk509", "email": "segura.alexis.1sen3@gmail.com", "phone": "0782178621", "archived": false}, {"id": "bk509_terol_pascal", "name": "Pascal Terol", "role": "equipier", "restoId": "bk509", "email": "test@test.com", "phone": "467420721", "archived": false}, {"id": "bk509_vochre_melissa", "name": "Melissa Vochre", "role": "equipier", "restoId": "bk509", "email": "vochre_melissa@yahoo.fr", "phone": "0787564700", "archived": false}, {"id": "bk509_wondjo_oheko_wivine", "name": "Wivine Wondjo Oheko", "role": "equipier", "restoId": "bk509", "email": "wivinewondjooheko@gmail.com", "phone": "0751467191", "archived": false}];
@@ -1119,7 +1013,6 @@ function saveEdit(){
   e.email=document.getElementById('edit-email').value.trim();
   var def=document.getElementById('edit-exit-def').value;
   if(def) e.exitDateDefinitive=def;
-  sb.patchWhere('bks_employees','id=eq.'+e.id,{name:e.name,role:e.role,resto_id:e.restoId,email:e.email||'',phone:e.phone||''}).catch(function(err){console.error('edit emp',err);});
   saveDB();closeModal('modal-edit');renderEquipe();fillEmpSelect();fillFilters();fillRptPersons();toast(e.name+' mis à jour ✔','success');
 }
 function openExit(id){
@@ -1137,7 +1030,6 @@ function confirmExit(){
   e.exitMotif=document.getElementById('exit-motif').value;
   e.exitNote=document.getElementById('exit-note').value.trim();
   e.exitDateDefinitive=null;
-  sb.patchWhere('bks_employees','id=eq.'+emp.id,{archived:emp.archived}).catch(function(e){console.error('arch emp',e);});
   saveDB();closeModal('modal-exit');empFilter='actif';renderEquipe();fillEmpSelect();fillFilters();fillRptPersons();
   toast(e.name+' archivé(e). Historique conservé ✔','success');
 }
@@ -1603,13 +1495,119 @@ function toast(msg,type){
   clearTimeout(toastTm);toastTm=setTimeout(function(){el.classList.remove('show');},3200);
 }
 window.onload=function(){schedReports();};
-</script>
-<script>
-// Chargement Supabase au démarrage
-window.addEventListener('DOMContentLoaded', async function() {
-  await loadFromSupabase();
-  console.log('App prête');
+
+
+// ══════════════════════════════════════════════════════════════════════════════
+// BK SUIVI — SUPABASE SYNC (ajouté sans modifier le code original)
+// ══════════════════════════════════════════════════════════════════════════════
+const SUPA_URL = 'https://kzkopbvythfhdnjlnphm.supabase.co';
+const SUPA_KEY = 'sb_publishable_YU-stfHeY5y2UZYj1zNQKg_YQjK0340';
+
+const sb = {
+  async get(table, query) {
+    const url = `${SUPA_URL}/rest/v1/${table}?${query || 'select=*'}`;
+    const r = await fetch(url, { headers: { apikey: SUPA_KEY, Authorization: `Bearer ${SUPA_KEY}` } });
+    if (!r.ok) throw new Error('GET '+table+': '+r.status);
+    return r.json();
+  },
+  async insert(table, data) {
+    const r = await fetch(`${SUPA_URL}/rest/v1/${table}`, {
+      method: 'POST',
+      headers: { apikey: SUPA_KEY, Authorization: `Bearer ${SUPA_KEY}`, 'Content-Type': 'application/json', Prefer: 'return=representation' },
+      body: JSON.stringify(data)
+    });
+    if (!r.ok) { console.error('INSERT '+table, await r.text()); return null; }
+    const d = await r.json(); return Array.isArray(d) ? d[0] : d;
+  },
+  async patchWhere(table, where, data) {
+    const r = await fetch(`${SUPA_URL}/rest/v1/${table}?${where}`, {
+      method: 'PATCH',
+      headers: { apikey: SUPA_KEY, Authorization: `Bearer ${SUPA_KEY}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+    return r.ok;
+  }
+};
+
+// Charger depuis Supabase et mettre à jour DB
+async function syncFromSupabase() {
+  try {
+    const [emps, incs, lets, settArr] = await Promise.all([
+      sb.get('bks_employees', 'select=*&order=name.asc'),
+      sb.get('bks_incidents', 'select=*&order=created_at.desc'),
+      sb.get('bks_letters', 'select=*&order=created_at.desc'),
+      sb.get('bks_settings', 'select=*&id=eq.main'),
+    ]);
+    
+    if (emps && emps.length > 0) {
+      DB.employees = emps.map(function(e) {
+        return { id:e.id, name:e.name, role:e.role, restoId:e.resto_id,
+          tileKey:e.tile_key||'', email:e.email||'', phone:e.phone||'', archived:e.archived||false };
+      });
+    }
+    
+    if (incs) {
+      DB.incidents = incs.map(function(i) {
+        return { id:i.id, empId:i.emp_id, restoId:i.resto_id, severity:i.severity,
+          problems:i.problems||[], extra:i.extra||{}, note:i.note||'',
+          createdBy:i.created_by, createdAt:i.created_at };
+      });
+    }
+    
+    if (lets) {
+      DB.letters = lets.map(function(l) {
+        return { id:l.id, empId:l.emp_id, restoId:l.resto_id, type:l.type,
+          subject:l.subject, body:l.body, status:l.status, sigStatus:l.sig_status,
+          sentAt:l.sent_at, signedAt:l.signed_at, refusedAt:l.refused_at, createdAt:l.created_at };
+      });
+    }
+    
+    const sett = settArr && settArr[0];
+    if (sett) {
+      if (sett.global_pins) DB.globalPins = sett.global_pins;
+      if (sett.resto_pins) DB.restoPins = sett.resto_pins;
+      if (sett.resto_names) DB.restoNames = sett.resto_names;
+      if (sett.mail_settings) DB.mailSettings = sett.mail_settings;
+    }
+    
+    console.log('Supabase sync OK:', DB.employees.length, 'employés');
+  } catch(e) {
+    console.warn('Supabase sync error (mode offline):', e.message);
+  }
+}
+
+// Remplacer saveDB pour sauvegarder aussi dans Supabase
+var _origSaveDB = typeof saveDB === 'function' ? saveDB : function(){};
+saveDB = function() {
+  // localStorage backup
+  try { localStorage.setItem('bk_v8', JSON.stringify(DB)); } catch(e) {}
+  // Supabase sync settings
+  sb.patchWhere('bks_settings', 'id=eq.main', {
+    global_pins: DB.globalPins,
+    resto_pins: DB.restoPins,
+    resto_names: DB.restoNames,
+    mail_settings: DB.mailSettings,
+    updated_at: new Date().toISOString()
+  }).catch(function(e) { console.warn('saveDB Supabase:', e); });
+};
+
+// Sync auto toutes les 5 secondes
+setInterval(function() {
+  if (!curUser) return;
+  syncFromSupabase().then(function() {
+    // Re-render si nécessaire
+    if (curUser && typeof renderInc === 'function') renderInc();
+    if (curUser && typeof renderEquipe === 'function') {
+      try { renderEquipe(); } catch(e) {}
+    }
+  });
+}, 5000);
+
+// Démarrage : charger Supabase
+document.addEventListener('DOMContentLoaded', function() {
+  syncFromSupabase();
 });
+
 </script>
 </body>
 </html>

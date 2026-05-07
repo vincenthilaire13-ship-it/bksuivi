@@ -238,7 +238,7 @@ textarea.fi{resize:vertical;min-height:75px;}
       <div class="prob-grid" id="prob-grid"></div>
       <label class="flabel" style="margin-top:12px;">Type de sanction</label>
       <div class="sev-row">
-        <button class="sev-btn" data-sanc="verbal" onclick="setSanction(this)" style="color:#F5A623;border-color:#F5A623;">📝 Observation verbale</button>
+        <button class="sev-btn" data-sanc="verbal" onclick="setSanction(this)" style="color:#F5A623;border-color:#F5A623;">📝 Observation orale</button>
         <button class="sev-btn" data-sanc="ecrit" onclick="setSanction(this)" style="color:#5BA3F5;border-color:#5BA3F5;">📄 Observation écrite</button>
         <button class="sev-btn" data-sanc="avert" onclick="setSanction(this)" style="color:#FF8732;border-color:#FF8732;">⚠️ Avertissement</button>
         <button class="sev-btn" data-sanc="mise" onclick="setSanction(this)" style="color:#D62300;border-color:#D62300;">🔴 Mise en demeure</button>
@@ -521,11 +521,11 @@ const PROBS = [
   {id:'retard',icon:'⏰',label:'Retard',extra:{type:'retard',label:'Retard'}},
   {id:'absence',icon:'🚫',label:'Absence injustifiée',extra:{type:'multi_date',label:'Absence'}},
   {id:'arret_maladie',icon:'🏥',label:'Arrêt maladie',extra:{type:'date_range',label:'Arrêt maladie'}},
-  {id:'abandon',icon:'🏃',label:'Abandon de poste',extra:null},
+  {id:'abandon',icon:'🏃',label:'Abandon de poste',extra:{type:'datetime-local',label:"Date et heure de l'abandon"}},
   {id:'lenteur',icon:'🐢',label:'Travail lent exprès',extra:null},
   {id:'impolitesse',icon:'😤',label:'Impolitesse',extra:null},
   {id:'gros_mots',icon:'🤬',label:'Gros mots',extra:null},
-  {id:'telephone',icon:'📵',label:'Téléphone au poste',extra:null},
+  {id:'telephone',icon:'📵',label:'Téléphone perso au travail',extra:null},
   {id:'refus',icon:'🙅',label:"Refus d'obéir",extra:null},
   {id:'hygiene',icon:'🧽',label:'Hygiène alimentaire',extra:null},
   {id:'autre',icon:'❗',label:'Autre',extra:null},
@@ -796,6 +796,8 @@ function initForm(){
           +'<div><label class="flabel">Du</label><input type="date" class="fi" id="ex-'+p.id+'-from" oninput="updateDateRange(\''+p.id+'\')"></div>'
           +'<div><label class="flabel">Au</label><input type="date" class="fi" id="ex-'+p.id+'-to" oninput="updateDateRange(\''+p.id+'\')"></div>'
           +'</div><div id="ex-'+p.id+'-result" style="font-size:.82rem;color:var(--orange);font-weight:700;margin-top:4px;min-height:18px;"></div>';
+      } else if(p.extra.type==='datetime-local'){
+        ex.innerHTML='<label class="flabel">'+p.extra.label+'</label><input type="datetime-local" class="fi" data-pid="'+p.id+'" oninput="extraData[\''+p.id+'\']=new Date(this.value).toLocaleString(\'fr-FR\');">';
       } else {
         ex.innerHTML='<label class="flabel">'+p.extra.label+'</label><input type="'+(p.extra.type==='time'?'time':'date')+'" class="fi" data-pid="'+p.id+'" oninput="extraData[\''+p.id+'\']=this.value;">';
       }
@@ -812,8 +814,20 @@ function toggleProb(div,p){
 }
 
 function setSanction(btn){
-  document.querySelectorAll('.sev-btn[data-sanc]').forEach(function(b){b.style.background='';b.style.fontWeight='';});
-  btn.style.background=btn.style.color+'33';btn.style.fontWeight='700';
+  document.querySelectorAll('.sev-btn[data-sanc]').forEach(function(b){
+    b.style.background='';
+    b.style.color=b.dataset.sanc==='verbal'?'#F5A623':b.dataset.sanc==='ecrit'?'#5BA3F5':b.dataset.sanc==='avert'?'#FF8732':'#D62300';
+    b.style.fontWeight='';
+    b.style.transform='';
+    b.style.boxShadow='';
+  });
+  var colors={verbal:'#F5A623',ecrit:'#5BA3F5',avert:'#FF8732',mise:'#D62300'};
+  var c=colors[btn.dataset.sanc];
+  btn.style.background=c;
+  btn.style.color='#fff';
+  btn.style.fontWeight='900';
+  btn.style.transform='scale(1.06)';
+  btn.style.boxShadow='0 4px 16px '+c+'88';
   selSanction=btn.dataset.sanc;
   selSev={verbal:'2',ecrit:'2',avert:'3',mise:'4'}[selSanction]||'2';
 }
@@ -822,7 +836,11 @@ function resetForm(){
   selProbs=new Set();selSev=null;selSanction=null;extraData={};
   document.querySelectorAll('.prob-check').forEach(function(d){d.classList.remove('on');});
   document.querySelectorAll('.prob-extra').forEach(function(d){d.classList.remove('show');});
-  document.querySelectorAll('.sev-btn[data-sanc]').forEach(function(b){b.style.background='';});
+  document.querySelectorAll('.sev-btn[data-sanc]').forEach(function(b){
+    b.style.background='';
+    b.style.color=b.dataset.sanc==='verbal'?'#F5A623':b.dataset.sanc==='ecrit'?'#5BA3F5':b.dataset.sanc==='avert'?'#FF8732':'#D62300';
+    b.style.fontWeight='';b.style.transform='';b.style.boxShadow='';
+  });
   // Reset champs spéciaux
   ['retard-prev','retard-arr','retard-result'].forEach(function(s){var el=document.getElementById('ex-'+s);if(el)el.value!==undefined?el.value='':el.textContent='';});
   var tags=document.getElementById('ex-absence-tags');if(tags)tags.innerHTML='';
@@ -1014,6 +1032,7 @@ function renderEquipe(){
           +'<span class="role-pill rp-'+ro[0]+'">'+cap(ro)+'</span>'
           +(canManage&&!arch?'<button class="btn btn-gray btn-sm" onclick="openEdit(\''+e.id+'\')">✏️</button>':'')
           +(canManage&&!arch&&(ro==='equipier'||ro==='leader')?'<button class="btn-danger" onclick="openExit(\''+e.id+'\')">📤</button>':'')
+          +(canManage&&!arch?'<button class="btn-danger" onclick="delEmp(\''+e.id+'\')">🗑️</button>':'')
           +(canManage&&arch?'<button class="btn btn-gray btn-sm" onclick="openEdit(\''+e.id+'\')">✏️</button>':'')
           +(canManage&&arch?'<button class="btn btn-gray btn-sm" style="background:#1A3A1A;border-color:#3A7A3A;color:#4CAF50;" onclick="reactivateEmp(\''+e.id+'\')">♻️ Réactiver</button>':'')
           +(canManage&&arch?'<button class="btn-danger" onclick="delEmp(\''+e.id+'\')">🗑️</button>':'')

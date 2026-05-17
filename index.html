@@ -6,7 +6,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 <script>emailjs.init("BSFTPjQ82p7MQPrVx");</script>
-<title>BK Suivi Équipe</title>
+<title>BKRH</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@400;500;600&display=swap');
 :root{--red:#D62300;--orange:#FF8732;--yellow:#F5A623;--dark:#1A1A1A;--gray:#2C2C2C;--r:8px;}
@@ -141,7 +141,7 @@ textarea.fi{resize:vertical;min-height:75px;}
 <body>
 
 <div id="loading-screen">
-  <div class="load-logo">BK SUIVI</div>
+  <div class="load-logo">BKRH</div>
   <div class="load-dots"><div class="load-dot"></div><div class="load-dot"></div><div class="load-dot"></div></div>
   <div style="font-size:.85rem;color:#888;" id="load-msg">Connexion à la base de données…</div>
 </div>
@@ -150,7 +150,7 @@ textarea.fi{resize:vertical;min-height:75px;}
   <div class="login-step" id="step-resto">
     <div style="text-align:center;margin-bottom:32px;">
       <div style="font-size:3.2rem;">👑</div>
-      <h2 style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.9rem;color:#F5A623;text-transform:uppercase;letter-spacing:3px;margin-top:6px;">BK Suivi</h2>
+      <h2 style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.9rem;color:#F5A623;text-transform:uppercase;letter-spacing:3px;margin-top:6px;">BKRH</h2>
       <p style="color:#888;font-size:.83rem;margin-top:4px;">Sélectionnez votre accès</p>
     </div>
     <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-bottom:20px;">
@@ -204,7 +204,7 @@ textarea.fi{resize:vertical;min-height:75px;}
 
 <div id="app">
   <header>
-    <h1>🔥 BK <span>Suivi</span></h1>
+    <h1>BK<span>RH</span></h1>
     <div id="user-info">
       <span id="uname"></span>
       <span id="role-badge"></span>
@@ -485,7 +485,7 @@ textarea.fi{resize:vertical;min-height:75px;}
 
 <script>
 // ══════════════════════════════════════════════════════════════════════════════
-// BK SUIVI v4 — Supabase-first (architecture propre)
+// BKRH v4 — Supabase-first (architecture propre)
 // ══════════════════════════════════════════════════════════════════════════════
 
 const SUPA_URL = 'https://kzkopbvythfhdnjlnphm.supabase.co';
@@ -1392,7 +1392,7 @@ function showSignPage(lid){
   document.getElementById('loading-screen').style.display='none';
   var l=DB.letters.find(function(x){return x.id===lid;});
   var sp=document.createElement('div');sp.style.cssText='min-height:100vh;background:#1A1A1A;';
-  sp.innerHTML='<div style="background:linear-gradient(135deg,#C01E00,#8B1500);padding:16px 24px;text-align:center;"><div style="font-family:\'Barlow Condensed\',sans-serif;font-weight:900;font-size:1.6rem;color:#F5A623;text-transform:uppercase;letter-spacing:3px;">🔥 BK Suivi — Signature</div></div><div style="max-width:640px;margin:0 auto;padding:24px;" id="sig-body"></div>';
+  sp.innerHTML='<div style="background:linear-gradient(135deg,#C01E00,#8B1500);padding:16px 24px;text-align:center;"><div style="font-family:\'Barlow Condensed\',sans-serif;font-weight:900;font-size:1.6rem;color:#F5A623;text-transform:uppercase;letter-spacing:3px;">BKRH — Signature</div></div><div style="max-width:640px;margin:0 auto;padding:24px;" id="sig-body"></div>';
   document.body.prepend(sp);
   var sb2=document.getElementById('sig-body');
   if(!l){sb2.innerHTML='<p style="color:#cc5555;margin-top:20px;">Courrier introuvable.</p>';return;}
@@ -1522,7 +1522,7 @@ function buildTextReportForResto(period, restoId){
     var e=DB.employees.find(function(x){return x.id===i.empId;});
     return e&&e.restoId===restoId;
   });
-  var txt='=== RAPPORT BK SUIVI - '+(RESTOS[restoId]?RESTOS[restoId].label:restoId)+' — '+pl[period]+' ===\n';
+  var txt='=== RAPPORT BKRH - '+(RESTOS[restoId]?RESTOS[restoId].label:restoId)+' — '+pl[period]+' ===\n';
   txt+='Généré le '+now.toLocaleString('fr-FR')+'\n';
   txt+='Total : '+incs.length+' incident'+(incs.length>1?'s':'')+'\n\n';
   incs.forEach(function(i){
@@ -1537,13 +1537,13 @@ function buildTextReportForResto(period, restoId){
 
 function buildTextReport(period){
   var pl={today:"Aujourd'hui",week:'7 derniers jours',month:'30 derniers jours',all:'Tout'};
-  var now=new Date();var incs=filterIncsByPeriod(period);var txt='=== RAPPORT BK SUIVI - '+pl[period]+' ===\nGénéré le '+now.toLocaleString('fr-FR')+'\n\n';
+  var now=new Date();var incs=filterIncsByPeriod(period);var txt='=== RAPPORT BKRH - '+pl[period]+' ===\nGénéré le '+now.toLocaleString('fr-FR')+'\n\n';
   Object.keys(RESTOS).forEach(function(rid){var rIncs=incs.filter(function(i){var e=DB.employees.find(function(x){return x.id===i.empId;});return e&&e.restoId===rid;});txt+='\n— '+RESTOS[rid].label+' ('+rIncs.length+' incidents) —\n';rIncs.forEach(function(i){var emp=DB.employees.find(function(e){return e.id===i.empId;});var dt=new Date(i.datetime||i.createdAt).toLocaleString('fr-FR');var types=i.problems.map(function(pid){var p=PROBS.find(function(x){return x.id===pid;});return p?p.label:pid;}).join(', ');txt+='  '+dt+' | '+(emp?emp.name:'?')+' | '+types+'\n';});});
   return txt;
 }
 async function sendReportEmail(period){
   var pl={today:'Quotidien',week:'Hebdomadaire',month:'Mensuel'};
-  var subj='[BK Suivi] Rapport '+pl[period]+' - '+new Date().toLocaleDateString('fr-FR');
+  var subj='[BKRH] Rapport '+pl[period]+' - '+new Date().toLocaleDateString('fr-FR');
   var ms=DB.mailSettings||{};
   var sent=0;
 
@@ -1555,7 +1555,7 @@ async function sendReportEmail(period){
     try{
       await emailjs.send('checklist_bk','template_ijwamd3',{
         to_email:dir.email, subject:subj+' — '+( RESTOS[dir.restoId]?RESTOS[dir.restoId].label:dir.restoId),
-        message:body, from_name:'BK Suivi'
+        message:body, from_name:'BKRH'
       });
       sent++;
     }catch(e){console.error('EmailJS directeur',dir.email,e);}
@@ -1569,7 +1569,7 @@ async function sendReportEmail(period){
       try{
         await emailjs.send('checklist_bk','template_ijwamd3',{
           to_email:rcpsFiltres[j].email, subject:subj+' — Tous restaurants',
-          message:bodyAll, from_name:'BK Suivi'
+          message:bodyAll, from_name:'BKRH'
         });
         sent++;
       }catch(e){console.error('EmailJS rcp',rcpsFiltres[j].email,e);}
